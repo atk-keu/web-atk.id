@@ -127,6 +127,28 @@ function login() {
     .checkLogin(user, pass);
 }
 
+const URL_WEB_APP = "https://google.com"; // Ganti dengan URL Web App Anda
+
+// Fungsi jembatan pengganti google.script.run
+function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGagal) {
+    fetch(URL_WEB_APP, {
+        method: "POST",
+        // Format body disesuaikan persis dengan keinginan doPost Anda
+        body: JSON.stringify({
+            namaFungsi: namaFungsi,
+            parameter: parameterArray
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (callbackSukses) callbackSukses(data);
+    })
+    .catch(error => {
+        console.error("Error Backend:", error);
+        if (callbackGagal) callbackGagal(error);
+    });
+}
+  
 function showPage(page) {
   document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
   let activeNav = document.getElementById('nav-' + page);
