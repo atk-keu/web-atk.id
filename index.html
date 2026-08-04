@@ -100,28 +100,33 @@ body { background-color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-let session = { user: '', role: '' };
-let CACHE_DATA = {};
-let currentTxType = '';  
+
 // 1. PASTIKAN URL UTANAMANYA SUDAH BENAR DI PALING ATAS SCRIPT
 const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec";
 
 // 2. FUNGSI JEMBATAN FETCH API
 function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGagal) {
+    // PASTIKAN di dalam fetch() ini tertulis URL_WEB_APP (tanpa tanda petik)
+    // Jangan tulis "https://google.com" di sini!
     fetch(URL_WEB_APP, {
         method: "POST",
-        mode: "cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ namaFungsi: namaFungsi, parameter: parameterArray })
+        body: JSON.stringify({
+            namaFungsi: namaFungsi,
+            parameter: parameterArray
+        })
     })
-    .then(res => {
-        if (!res.ok) throw new Error("Jaringan Google Apps Script sibuk.");
-        return res.json();
+    .then(response => {
+        if (!response.ok) throw new Error("Server Google Apps Script tidak merespons.");
+        return response.json();
     })
-    .then(data => { if (callbackSukses) callbackSukses(data); })
-    .catch(err => { if (callbackGagal) callbackGagal(err); });
+    .then(data => {
+        if (callbackSukses) callbackSukses(data);
+    })
+    .catch(error => {
+        console.error("Error Sistem:", error);
+        if (callbackGagal) callbackGagal(error);
+    });
 }
-
 // 3. FUNGSI UTAMA LOGIN
 function login() {
     const user = document.getElementById('user').value;
