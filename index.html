@@ -131,6 +131,22 @@ function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGaga
     });
 }
 }
+
+function login() {
+    const user = document.getElementById('user').value;
+    const pass = document.getElementById('pass').value;
+    document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
+    
+    // Memanggil fungsi checkLogin yang ada di Kode.gs melalui jembatan API
+    panggilBackend(
+        "checkLogin",          // Nama fungsi asli di Kode.gs Anda
+        [user, pass],          // Parameter dikirim dalam bentuk Array
+        setelahLoginSukses,    // Fungsi yang akan dijalankan jika login benar
+        function(err) {        // Fungsi jika koneksi internet terputus
+            document.getElementById('login-msg').innerText = "Koneksi gagal: " + err.message;
+        }
+    );
+}
   
 function showPage(page) {
     document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
