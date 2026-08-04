@@ -98,9 +98,12 @@ body { background-color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://jsdelivr.net"></script>
 <script>
-
+let session = { user: '', role: '' };
+let CACHE_DATA = {};
+let currentTxType = '';
+  
 // 1. PASTIKAN URL UTANAMANYA SUDAH BENAR DI PALING ATAS SCRIPT
 const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec";
 
@@ -128,34 +131,26 @@ function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGaga
     });
 }
   
-// 3. FUNGSI UTAMA LOGIN
 function login() {
     const user = document.getElementById('user').value;
     const pass = document.getElementById('pass').value;
     document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
     
-    panggilBackend(
-        "checkLogin", 
-        [user, pass], 
-        setelahLoginSukses, // Menunjuk ke fungsi di bawah ini
-        function(err) {
+    google.script.run
+        .withSuccessHandler(setelahLoginSukses)
+        .withFailureHandler(function(err) {
             document.getElementById('login-msg').innerText = "Koneksi gagal: " + err.message;
-        }
-    );
-} 
-  
-// 4. FUNGSI LANJUTAN SETELAH LOGIN (YANG TADI HILANG / ERROR)
+        })
+        .checkLogin(user, pass);
+}
+
 function setelahLoginSukses(response) {
     if (response && response.success) {
-        // Menyimpan data sesi login dari server Google
-        session = response; 
-        
-        // Sembunyikan halaman login, tampilkan halaman utama aplikasi
+        session = response;
         document.getElementById('login-page').classList.add('d-none');
         document.getElementById('main-page').classList.remove('d-none');
         document.getElementById('display-role').innerText = session.role;
         
-        // Atur hak akses menu bar berdasarkan tingkatan Role pengguna
         var elemenMenuMasuk = document.getElementById("menuBarangMasuk");
         if (elemenMenuMasuk) {
             if (session.role === "Staf") {
@@ -164,13 +159,11 @@ function setelahLoginSukses(response) {
                 elemenMenuMasuk.classList.remove('d-none');
             }
         }
-        
-        // Alihkan halaman ke Dashboard Utama
         showPage('dashboard');
     } else {
         document.getElementById('login-msg').innerText = "Kombinasi Username & Password salah!";
     }
-} 
+}  
   
 function showPage(page) {
     document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
@@ -376,5 +369,6 @@ function prosesTransaksi() {
     .submitTransaction(currentTxType, data, session.user);
 }
 </script>
+   <?!= HtmlService.createHtmlOutputFromFile('JavaScript').getContent(); ?>
 </body>
 </html>
