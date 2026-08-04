@@ -127,7 +127,9 @@ function login() {
 // PASTIKAN MERUPAKAN ALAMAT SCRIPT.GOOGLE.COM, BUKAN GOOGLE.COM!
 const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec";
 function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGagal) {
-    fetch(https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec, {
+    // PASTIKAN di dalam fetch() ini tertulis URL_WEB_APP (tanpa tanda petik)
+    // Jangan tulis "https://google.com" di sini!
+    fetch(URL_WEB_APP, {
         method: "POST",
         body: JSON.stringify({
             namaFungsi: namaFungsi,
