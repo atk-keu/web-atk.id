@@ -188,21 +188,6 @@ function setelahLoginSukses(response) {
     }
 }  
   
-function showPage(page) {
-    document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
-    let activeNav = document.getElementById('nav-' + page);
-    if(activeNav) activeNav.classList.add('active');
-    
-    document.getElementById('loading-spinner').classList.remove('d-none');
-    document.getElementById('konten-dinamis').innerHTML = '';
-    
-    // Mengganti google.script.run.getInventoryData()
-    panggilBackend("getInventoryData", [], function(data) {
-        CACHE_DATA = data;
-        document.getElementById('loading-spinner').classList.add('d-none');
-        renderHalaman(page);
-    });
-}
 function renderHalaman(menu) {
   let html = '';
   
