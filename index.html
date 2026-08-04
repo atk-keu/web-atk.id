@@ -128,8 +128,9 @@ function login() {
 const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec";
 
 function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGagal) {
-    // Gunakan URL_WEB_APP yang sudah kita deklarasikan di atas
-   fetch(URL_WEB_APP, {
+    // PASTIKAN di dalam fetch() ini tertulis URL_WEB_APP (tanpa tanda petik)
+    // Jangan tulis "https://google.com" di sini!
+    fetch(URL_WEB_APP, {
         method: "POST",
         body: JSON.stringify({
             namaFungsi: namaFungsi,
