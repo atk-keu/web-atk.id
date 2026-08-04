@@ -132,18 +132,39 @@ function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGaga
 
 // 3. FUNGSI UTAMA LOGIN
 function login() {
-    const user = document.getElementById('user').value;
-    const pass = document.getElementById('pass').value;
-    document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
-    
-    panggilBackend(
-        "checkLogin", 
-        [user, pass], 
-        setelahLoginSukses, // Menunjuk ke fungsi di bawah ini
-        function(err) {
-            document.getElementById('login-msg').innerText = "Koneksi gagal: " + err.message;
+  const user = document.getElementById('user').value;
+  const pass = document.getElementById('pass').value;
+  document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
+  
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if(res && res.success) {
+        session = res; // Menyimpan data session login
+        
+        document.getElementById('login-page').classList.add('d-none');
+        document.getElementById('main-page').classList.remove('d-none');
+        document.getElementById('display-role').innerText = session.role;
+        
+        // Proteksi Menu Barang Masuk
+        var elemenMenuMasuk = document.getElementById("menuBarangMasuk");
+        if (elemenMenuMasuk) {
+          if (session.role === "Staf") {
+            elemenMenuMasuk.classList.add('d-none');
+          } else {
+            elemenMenuMasuk.classList.remove('d-none');
+          }
         }
-    );
+
+        showPage('dashboard');
+      } else {
+        document.getElementById('login-msg').innerText = "Kombinasi Username & Password salah!";
+      }
+    })
+    .withFailureHandler(function(err) {
+      // MENCEGAH LOADING MASET: Menampilkan pesan eror jika koneksi server gagal
+      document.getElementById('login-msg').innerText = "Gagal terhubung ke server: " + err.message;
+    })
+    .checkLogin(user, pass);
 }
 
 // 4. FUNGSI LANJUTAN SETELAH LOGIN (YANG TADI HILANG / ERROR)
