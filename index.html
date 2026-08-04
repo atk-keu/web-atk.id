@@ -107,43 +107,23 @@ let currentTxType = '';
 // 1. PASTIKAN URL UTANAMANYA SUDAH BENAR DI PALING ATAS SCRIPT
 const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec";
 
-// 2. FUNGSI JEMBATAN FETCH API
-function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGagal) {
-    // PASTIKAN di dalam fetch() ini tertulis URL_WEB_APP (tanpa tanda petik)
-    // Jangan tulis "https://google.com" di sini!
-    fetch(URL_WEB_APP, {
-        method: "POST",
-        body: JSON.stringify({
-            namaFungsi: namaFungsi,
-            parameter: parameterArray
-        })
-    })
-    .then(response => {
-        if (!response.ok) throw new Error("Server Google Apps Script tidak merespons.");
-        return response.json();
-    })
-    .then(data => {
-        if (callbackSukses) callbackSukses(data);
-    })
-    .catch(error => {
-        console.error("Error Sistem:", error);
-        if (callbackGagal) callbackGagal(error);
-    });
-}
-  
 function login() {
     const user = document.getElementById('user').value;
     const pass = document.getElementById('pass').value;
     document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
-    
-    google.script.run
-        .withSuccessHandler(setelahLoginSukses)
-        .withFailureHandler(function(err) {
-            document.getElementById('login-msg').innerText = "Koneksi gagal: " + err.message;
-        })
-        .checkLogin(user, pass);
-}
 
+    // Menggunakan fetch untuk menembak API Google Apps Script
+    fetch(URL_WEB_APP, {
+        method: 'POST',
+        body: JSON.stringify({ aksi: 'checkLogin', user: user, pass: pass })
+    })
+    .then(res => res.json())
+    .then(data => setelahLoginSukses(data))
+    .catch(err => {
+        document.getElementById('login-msg').innerText = "Koneksi gagal: " + err.message;
+    });
+}
+  
 function setelahLoginSukses(response) {
     if (response && response.success) {
         session = response;
