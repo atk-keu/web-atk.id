@@ -103,9 +103,27 @@ body { background-color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif
 let session = { user: '', role: '' };
 let CACHE_DATA = {};
 let currentTxType = '';
-
-
-
+function login() {
+  const user = document.getElementById('user').value;
+  const pass = document.getElementById('pass').value;
+  document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && res.success) {
+        session = res;
+        document.getElementById('login-page').classList.add('d-none');
+        document.getElementById('main-page').classList.remove('d-none');
+        document.getElementById('display-role').innerText = session.role;
+        showPage('dashboard');
+      } else {
+        document.getElementById('login-msg').innerText = "Kombinasi Username & Password salah!";
+      }
+    })
+    .withFailureHandler(function(err) {
+      document.getElementById('login-msg').innerText = "Terjadi kesalahan: " + err.message;
+    })
+    .checkLogin(user, pass);
+}
 // PASTIKAN MERUPAKAN ALAMAT SCRIPT.GOOGLE.COM, BUKAN GOOGLE.COM!
 const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec";
 
