@@ -142,7 +142,6 @@ function login() {
     );
 }
 
-  
 function setelahLoginSukses(response) {
     if (response && response.success) {
         session = response;
@@ -158,7 +157,7 @@ function setelahLoginSukses(response) {
                 elemenMenuMasuk.classList.remove('d-none');
             }
         }
-        showPage('dashboard');
+      ('dashboard');
     } else {
         document.getElementById('login-msg').innerText = "Kombinasi Username & Password salah!";
     }
@@ -179,7 +178,6 @@ function showPage(page) {
         renderHalaman(page);
     });
 }
-  
 function renderHalaman(menu) {
   let html = '';
   
