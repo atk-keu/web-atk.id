@@ -106,23 +106,42 @@ let currentTxType = '';
   
 // 1. PASTIKAN URL UTANAMANYA SUDAH BENAR DI PALING ATAS SCRIPT
 const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec";
-
+// Fungsi jembatan pengganti google.script.run
+function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGagal) {
+    fetch(URL_WEB_APP, {
+        method: "POST",
+        // Format body disesuaikan persis dengan keinginan doPost Anda
+        body: JSON.stringify({
+            namaFungsi: namaFungsi,
+            parameter: parameterArray
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (callbackSukses) callbackSukses(data);
+    })
+    .catch(error => {
+        console.error("Error Backend:", error);
+        if (callbackGagal) callbackGagal(error);
+    });
+}
+  
 function login() {
     const user = document.getElementById('user').value;
     const pass = document.getElementById('pass').value;
     document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
-
-    // Menggunakan fetch untuk menembak API Google Apps Script
-    fetch(URL_WEB_APP, {
-        method: 'POST',
-        body: JSON.stringify({ aksi: 'checkLogin', user: user, pass: pass })
-    })
-    .then(res => res.json())
-    .then(data => setelahLoginSukses(data))
-    .catch(err => {
-        document.getElementById('login-msg').innerText = "Koneksi gagal: " + err.message;
-    });
+    
+    // Panggil fungsi checkLogin(user, pass) yang ada di Kode.gs
+    panggilBackend(
+        "checkLogin",          // Nama fungsi di Kode.gs
+        [user, pass],          // Parameter yang dikirim dalam bentuk Array
+        setelahLoginSukses,    // Jalankan ini jika sukses balik data
+        function(err) {        // Jalankan ini jika koneksi gagal
+            document.getElementById('login-msg').innerText = "Koneksi gagal: " + err.message;
+        }
+    );
 }
+
   
 function setelahLoginSukses(response) {
     if (response && response.success) {
