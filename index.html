@@ -103,51 +103,67 @@ body { background-color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif
 let session = { user: '', role: '' };
 let CACHE_DATA = {};
 let currentTxType = '';  
-// 1. TARUH URL WEB APP GOOGLE ANDA DI SINI
-const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec"; 
+// 1. PASTIKAN URL UTANAMANYA SUDAH BENAR DI PALING ATAS SCRIPT
+const URL_WEB_APP = "https://google.com";
 
-// 2. FUNGSI JEMBATAN UNTUK MENGGANTIKAN google.script.run
+// 2. FUNGSI JEMBATAN FETCH API
 function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGagal) {
     fetch(URL_WEB_APP, {
         method: "POST",
-        mode: "cors", // Mengizinkan akses lintas server dari GitHub ke Google
-        headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify({
-            namaFungsi: namaFungsi,
-            parameter: parameterArray
-        })
+        mode: "cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ namaFungsi: namaFungsi, parameter: parameterArray })
     })
-    .then(response => {
-        if (!response.ok) throw new Error("Respons jaringan tidak stabil");
-        return response.json();
+    .then(res => {
+        if (!res.ok) throw new Error("Jaringan Google Apps Script sibuk.");
+        return res.json();
     })
-    .then(data => {
-        if (callbackSukses) callbackSukses(data);
-    })
-    .catch(error => {
-        console.error("Error Backend:", error);
-        if (callbackGagal) callbackGagal(error);
-    });
-}
+    .then(data => { if (callbackSukses) callbackSukses(data); })
+    .catch(err => { if (callbackGagal) callbackGagal(err); });
 }
 
+// 3. FUNGSI UTAMA LOGIN
 function login() {
     const user = document.getElementById('user').value;
     const pass = document.getElementById('pass').value;
     document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
     
-    // Memanggil fungsi checkLogin yang ada di Kode.gs melalui jembatan API
     panggilBackend(
-        "checkLogin",          // Nama fungsi asli di Kode.gs Anda
-        [user, pass],          // Parameter dikirim dalam bentuk Array
-        setelahLoginSukses,    // Fungsi yang akan dijalankan jika login benar
-        function(err) {        // Fungsi jika koneksi internet terputus
+        "checkLogin", 
+        [user, pass], 
+        setelahLoginSukses, // Menunjuk ke fungsi di bawah ini
+        function(err) {
             document.getElementById('login-msg').innerText = "Koneksi gagal: " + err.message;
         }
     );
-}
+} 
+// 4. FUNGSI LANJUTAN SETELAH LOGIN (YANG TADI HILANG / ERROR)
+function setelahLoginSukses(response) {
+    if (response && response.success) {
+        // Menyimpan data sesi login dari server Google
+        session = response; 
+        
+        // Sembunyikan halaman login, tampilkan halaman utama aplikasi
+        document.getElementById('login-page').classList.add('d-none');
+        document.getElementById('main-page').classList.remove('d-none');
+        document.getElementById('display-role').innerText = session.role;
+        
+        // Atur hak akses menu bar berdasarkan tingkatan Role pengguna
+        var elemenMenuMasuk = document.getElementById("menuBarangMasuk");
+        if (elemenMenuMasuk) {
+            if (session.role === "Staf") {
+                elemenMenuMasuk.classList.add('d-none');
+            } else {
+                elemenMenuMasuk.classList.remove('d-none');
+            }
+        }
+        
+        // Alihkan halaman ke Dashboard Utama
+        showPage('dashboard');
+    } else {
+        document.getElementById('login-msg').innerText = "Kombinasi Username & Password salah!";
+    }
+} 
   
 function showPage(page) {
     document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
