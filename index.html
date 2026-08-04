@@ -110,13 +110,19 @@ const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3
 function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGagal) {
     fetch(URL_WEB_APP, {
         method: "POST",
-        // Format body disesuaikan persis dengan keinginan doPost Anda
+        mode: "cors", // Mengizinkan akses lintas server dari GitHub ke Google
+        headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+        },
         body: JSON.stringify({
             namaFungsi: namaFungsi,
             parameter: parameterArray
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) throw new Error("Respons jaringan tidak stabil");
+        return response.json();
+    })
     .then(data => {
         if (callbackSukses) callbackSukses(data);
     })
@@ -126,21 +132,40 @@ function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGaga
     });
 }
   
+// 3. FUNGSI LOGIN BARU YANG SUDAH DIPERBAIKI (TIDAK PAKAI google.script.run)
 function login() {
     const user = document.getElementById('user').value;
     const pass = document.getElementById('pass').value;
     document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
     
-    // Panggil fungsi checkLogin(user, pass) yang ada di Kode.gs
+    // Memanggil fungsi checkLogin yang ada di Kode.gs melalui jembatan API
     panggilBackend(
-        "checkLogin",          // Nama fungsi di Kode.gs
-        [user, pass],          // Parameter yang dikirim dalam bentuk Array
-        setelahLoginSukses,    // Jalankan ini jika sukses balik data
-        function(err) {        // Jalankan ini jika koneksi gagal
+        "checkLogin",          // Nama fungsi asli di Kode.gs Anda
+        [user, pass],          // Parameter dikirim dalam bentuk Array
+        setelahLoginSukses,    // Fungsi yang akan dijalankan jika login benar
+        function(err) {        // Fungsi jika koneksi internet terputus
             document.getElementById('login-msg').innerText = "Koneksi gagal: " + err.message;
         }
     );
 }
+
+// 4. FUNGSI SHOWPAGE BARU UNTUK AMBIL DATA DI GITHUB
+function showPage(page) {
+    document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
+    let activeNav = document.getElementById('nav-' + page);
+    if(activeNav) activeNav.classList.add('active');
+    
+    document.getElementById('loading-spinner').classList.remove('d-none');
+    document.getElementById('konten-dinamis').innerHTML = '';
+    
+    // Mengganti google.script.run.getInventoryData()
+    panggilBackend("getInventoryData", [], function(data) {
+        CACHE_DATA = data;
+        document.getElementById('loading-spinner').classList.add('d-none');
+        renderHalaman(page);
+    });
+}
+Gunakan kode dengan hati-hati.
 
 function setelahLoginSukses(response) {
     if (response && response.success) {
