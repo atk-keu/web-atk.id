@@ -100,11 +100,12 @@ body { background-color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif
 
 <script src="https://jsdelivr.net"></script>
 <script>
-
-  
+let session = { user: '', role: '' };
+let CACHE_DATA = {};
+let currentTxType = '';
 // 1. PASTIKAN URL UTANAMANYA SUDAH BENAR DI PALING ATAS SCRIPT
 const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec";
-// 2. FUNGSI JEMBATAN FETCH (TULIS KODE INI JIKA BELUM ADA)
+// 2. FUNGSI JEMBATAN FETCH API
 function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGagal) {
     fetch(URL_WEB_APP, {
         method: "POST",
@@ -120,21 +121,48 @@ function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGaga
     .catch(err => { if (callbackGagal) callbackGagal(err); });
 }
 
-// 3. FUNGSI LOGIN YANG SUDAH BERSIH DARI KATA 'google'
+// 3. FUNGSI UTAMA LOGIN
 function login() {
     const user = document.getElementById('user').value;
     const pass = document.getElementById('pass').value;
     document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
     
-    // Menembak fungsi checkLogin di server Google lewat fetch API
     panggilBackend(
         "checkLogin", 
         [user, pass], 
-        setelahLoginSukses, 
+        setelahLoginSukses, // Menunjuk ke fungsi di bawah ini
         function(err) {
             document.getElementById('login-msg').innerText = "Koneksi gagal: " + err.message;
         }
     );
+}
+
+// 4. FUNGSI LANJUTAN SETELAH LOGIN (YANG TADI HILANG / ERROR)
+function setelahLoginSukses(response) {
+    if (response && response.success) {
+        // Menyimpan data sesi login dari server Google
+        session = response; 
+        
+        // Sembunyikan halaman login, tampilkan halaman utama aplikasi
+        document.getElementById('login-page').classList.add('d-none');
+        document.getElementById('main-page').classList.remove('d-none');
+        document.getElementById('display-role').innerText = session.role;
+        
+        // Atur hak akses menu bar berdasarkan tingkatan Role pengguna
+        var elemenMenuMasuk = document.getElementById("menuBarangMasuk");
+        if (elemenMenuMasuk) {
+            if (session.role === "Staf") {
+                elemenMenuMasuk.classList.add('d-none');
+            } else {
+                elemenMenuMasuk.classList.remove('d-none');
+            }
+        }
+        
+        // Alihkan halaman ke Dashboard Utama
+        showPage('dashboard');
+    } else {
+        document.getElementById('login-msg').innerText = "Kombinasi Username & Password salah!";
+    }
 }
 // 4. FUNGSI SHOWPAGE BARU UNTUK AMBIL DATA DI GITHUB
 function showPage(page) {
