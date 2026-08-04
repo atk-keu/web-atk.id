@@ -127,34 +127,42 @@ function login() {
     .checkLogin(user, pass);
 }
 
-// 1. TARUH URL WEB APP GOOGLE ANDA DI SINI
-const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec"; 
+// 1. PASTIKAN URL LENGKAP INI SUDAH TERTULIS DI ATAS SCRIPT ANDA
+const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec";
 
-// 2. FUNGSI JEMBATAN UNTUK MENGGANTIKAN google.script.run
+// 2. FUNGSI JEMBATAN FETCH (TULIS KODE INI JIKA BELUM ADA)
 function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGagal) {
     fetch(URL_WEB_APP, {
         method: "POST",
-        mode: "cors", // Mengizinkan akses lintas server dari GitHub ke Google
-        headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify({
-            namaFungsi: namaFungsi,
-            parameter: parameterArray
-        })
+        mode: "cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ namaFungsi: namaFungsi, parameter: parameterArray })
     })
-    .then(response => {
-        if (!response.ok) throw new Error("Respons jaringan tidak stabil");
-        return response.json();
+    .then(res => {
+        if (!res.ok) throw new Error("Jaringan Google Apps Script sibuk.");
+        return res.json();
     })
-    .then(data => {
-        if (callbackSukses) callbackSukses(data);
-    })
-    .catch(error => {
-        console.error("Error Backend:", error);
-        if (callbackGagal) callbackGagal(error);
-    });
+    .then(data => { if (callbackSukses) callbackSukses(data); })
+    .catch(err => { if (callbackGagal) callbackGagal(err); });
 }
+
+// 3. FUNGSI LOGIN YANG SUDAH BERSIH DARI KATA 'google'
+function login() {
+    const user = document.getElementById('user').value;
+    const pass = document.getElementById('pass').value;
+    document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
+    
+    // Menembak fungsi checkLogin di server Google lewat fetch API
+    panggilBackend(
+        "checkLogin", 
+        [user, pass], 
+        setelahLoginSukses, 
+        function(err) {
+            document.getElementById('login-msg').innerText = "Koneksi gagal: " + err.message;
+        }
+    );
+}
+
 
 // 3. FUNGSI LOGIN BARU YANG SUDAH DIPERBAIKI (TIDAK PAKAI google.script.run)
 function login() {
