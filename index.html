@@ -213,101 +213,97 @@ function setelahLoginSukses(response) {
 }  
   
 function renderHalaman(menu) {
-  let html = '';
-  
-  // DASHBOARD PANEL
-  if (menu === 'dashboard') {
-    let totalJenis = CACHE_DATA.master ? CACHE_DATA.master.length - 1 : 0;
-    let totalMasuk = CACHE_DATA.logs ? CACHE_DATA.logs.filter(l => l[1] === "MASUK").length : 0;
-    let totalKeluar = CACHE_DATA.logs ? CACHE_DATA.logs.filter(l => l[1] === "KELUAR").length : 0;
-    
-    html = `
-      <div class="mb-4"><h3 class="fw-bold text-dark m-0">Ringkasan Analisis Gudang</h3><p class="text-muted small">Halo ${session.user}, berikut rangkuman aktivitas hari ini.</p></div>
-      <div class="row g-3">
-        <div class="col-md-4"><div class="card card-custom p-4 border-start border-primary border-4">
-          <div class="d-flex justify-content-between align-items-center"><div><p class="text-muted small text-uppercase fw-bold mb-1">Ragam SKU Terdaftar</p><h2 class="fw-bold text-dark mb-0">${totalJenis < 0 ? 0 : totalJenis} Item</h2></div><div class="text-primary fs-1"><i class="bi bi-box"></i></div></div>
-        </div></div>
-        <div class="col-md-4"><div class="card card-custom p-4 border-start border-success border-4">
-          <div class="d-flex justify-content-between align-items-center"><div><p class="text-muted small text-uppercase fw-bold mb-1">Log Selesai Masuk</p><h2 class="fw-bold text-success mb-0">${totalMasuk} Transaksi</h2></div><div class="text-success fs-1"><i class="bi bi-box-arrow-in-down"></i></div></div>
-        </div></div>
-        <div class="col-md-4"><div class="card card-custom p-4 border-start border-danger border-4">
-          <div class="d-flex justify-content-between align-items-center"><div><p class="text-muted small text-uppercase fw-bold mb-1">Log Keluar Distribusi</p><h2 class="fw-bold text-danger mb-0">${totalKeluar} Transaksi</h2></div><div class="text-danger fs-1"><i class="bi bi-box-arrow-up"></i></div></div>
-        </div></div>
-      </div>
-      <div class="card card-custom mt-4">
-        <div class="card-header bg-white py-3 fw-bold border-0 d-flex align-items-center justify-content-between"><span class="text-dark"><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Pemberitahuan Kontrol Batas Stok Minimum</span><span class="badge bg-light text-dark">Limit &lt;= 5 Pcs</span></div>
-        <div class="table-responsive"><table class="table align-middle m-0">
-          <thead><tr><th>KODE BARANG</th><th>NAMA MASTER BARANG</th><th>SISA STOK</th><th>ZONA PENYIMPANAN</th></tr></thead>
-          <tbody>`;
-    
-    let alertCount = 0;
-    if (CACHE_DATA.master) {
-      for(let i=1; i<CACHE_DATA.master.length; i++) {
-        if (Number(CACHE_DATA.master[i][4]) <= 5) {
-          alertCount++;
-          html += `<tr class="table-danger text-danger"><td><span class="badge bg-danger bg-opacity-10 text-danger">${CACHE_DATA.master[i][0]}</span></td><td class="fw-semibold">${CACHE_DATA.master[i][1]}</td><td class="fw-bold">${CACHE_DATA.master[i][4]}</td><td><i class="bi bi-geo-alt-fill me-1"></i>${CACHE_DATA.master[i][6]}</td></tr>`;
+    let html = '';
+    if(menu === 'dashboard') {
+        let totalJenis = (CACHE_DATA && CACHE_DATA.master) ? CACHE_DATA.master.length - 1 : 0;
+        let totalMasuk = (CACHE_DATA && CACHE_DATA.logs) ? CACHE_DATA.logs.filter(l => l === "MASUK").length : 0;
+        let totalKeluar = (CACHE_DATA && CACHE_DATA.logs) ? CACHE_DATA.logs.filter(l => l === "KELUAR").length : 0;
+        
+        html = `
+        <div class="mb-4"><h3 class="fw-bold text-dark m-0">Ringkasan Analisis Gudang</h3><p class="text-muted small">Halo ${session.user}, berikut rangkuman aktivitas hari ini.</p></div>
+        <div class="row g-3">
+            <div class="col-md-4"><div class="card card-custom p-4 border-start border-primary border-4">
+            <div class="d-flex justify-content-between align-items-center"><div><p class="text-muted small text-uppercase fw-bold mb-1">Ragam SKU Terdaftar</p><h2 class="fw-bold text-dark mb-0">${totalJenis < 0 ? 0 : totalJenis} Item</h2></div><div class="text-primary fs-1"><i class="bi bi-box"></i></div></div>
+            </div></div>
+            <div class="col-md-4"><div class="card card-custom p-4 border-start border-success border-4">
+            <div class="d-flex justify-content-between align-items-center"><div><p class="text-muted small text-uppercase fw-bold mb-1">Log Selesai Masuk</p><h2 class="fw-bold text-success mb-0">${totalMasuk} Transaksi</h2></div><div class="text-success fs-1"><i class="bi bi-box-arrow-in-down"></i></div></div>
+            </div></div>
+            <div class="col-md-4"><div class="card card-custom p-4 border-start border-danger border-4">
+            <div class="d-flex justify-content-between align-items-center"><div><p class="text-muted small text-uppercase fw-bold mb-1">Log Keluar Distribusi</p><h2 class="fw-bold text-danger mb-0">${totalKeluar} Transaksi</h2></div><div class="text-danger fs-1"><i class="bi bi-box-arrow-up"></i></div></div>
+            </div></div>
+        </div>
+        <div class="card card-custom mt-4">
+            <div class="card-header bg-white py-3 fw-bold border-0 d-flex align-items-center justify-content-between"><span class="text-dark"><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Pemberitahuan Kontrol Batas Stok Minimum</span><span class="badge bg-light text-dark">Limit <= 5 Pcs</span></div>
+            <div class="table-responsive"><table class="table align-middle m-0">
+            <thead><tr><th>KODE BARANG</th><th>NAMA MASTER BARANG</th><th>SISA STOK</th><th>ZONA PENYIMPANAN</th></tr></thead>
+            <tbody>`;
+            
+        let alertCount = 0;
+        if(CACHE_DATA && CACHE_DATA.master) {
+            for(let i=1; i<CACHE_DATA.master.length; i++) {
+                if(Number(CACHE_DATA.master[i][4]) <= 5) {
+                    alertCount++;
+                    html += `<tr class="table-danger text-danger"><td><span class="badge bg-danger bg-opacity-10 text-danger">${CACHE_DATA.master[i][0]}</span></td><td class="fw-semibold">${CACHE_DATA.master[i][1]}</td><td class="fw-bold">${CACHE_DATA.master[i][4]}</td><td><i class="bi bi-geo-alt-fill me-1"></i>${CACHE_DATA.master[i][6]}</td></tr>`;
+                }
+            }
         }
-      }
-    }
-    if (alertCount === 0) html += `<tr><td colspan="4" class="text-center text-success py-4 fw-semibold"><i class="bi bi-check-circle-fill me-2"></i>Semua volume aman dan berada di atas batas kritis.</td></tr>`;
-    html += `</tbody></table></div></div>`;
-
-  // DAFTAR BARANG
-  } else if (menu === 'daftar') {
-    html = `
-      <div class="mb-4"><h3 class="fw-bold text-dark m-0">Katalog Master Data Barang</h3><p class="text-muted small">Menu ini berfungsi sebagai acuan monitoring sisa stok gudang pusat.</p></div>
-      <div class="card card-custom"><div class="table-responsive"><table class="table align-middle m-0 text-nowrap">
+        if(alertCount === 0) html += `<tr><td colspan="4" class="text-center text-success py-4 fw-semibold"><i class="bi bi-check-circle-fill me-2"></i>Semua volume aman dan berada di atas batas kritis.</td></tr>`;
+        html += `</tbody></table></div></div>`;
+        
+    } else if(menu === 'daftar') {
+        html = `<div class="mb-4"><h3 class="fw-bold text-dark m-0">Katalog Master Data Barang</h3><p class="text-muted small">Menu ini berfungsi sebagai acuan monitoring sisa stok gudang pusat.</p></div>
+        <div class="card card-custom"><div class="table-responsive"><table class="table align-middle m-0 text-nowrap">
         <thead><tr><th>KODE SKU</th><th>NAMA BARANG</th><th>KATEGORI</th><th>STOK AWAL</th><th>STOK BERJALAN</th><th>SATUAN</th><th>LOKASI RAK</th></tr></thead><tbody>`;
-    
-    if (CACHE_DATA.master) {
-      for(let i=1; i<CACHE_DATA.master.length; i++) {
-        let limits = CACHE_DATA.master[i][4] <= 5;
-        html += `<tr>
-          <td><span class="badge bg-light text-secondary border fw-bold px-2 py-1">${CACHE_DATA.master[i][0]}</span></td>
-          <td><div class="fw-bold text-dark">${CACHE_DATA.master[i][1]}</div></td>
-          <td><span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1">${CACHE_DATA.master[i][2]}</span></td>
-          <td class="text-muted">${CACHE_DATA.master[i][3]}</td>
-          <td><span class="badge ${limits ? 'bg-danger text-white': 'bg-success bg-opacity-10 text-success'} badge-status">${CACHE_DATA.master[i][4]}</span></td>
-          <td class="text-muted">${CACHE_DATA.master[i][5]}</td>
-          <td><span class="text-dark fw-medium"><i class="bi bi-geo-alt text-primary me-1"></i>${CACHE_DATA.master[i][6]}</span></td>
-        </tr>`;
-      }
-    }
-    if (!CACHE_DATA.master || CACHE_DATA.master.length <= 1) html += `<tr><td colspan="7" class="text-center text-muted py-5">Sistem belum mendeteksi adanya data master.</td></tr>`;
-    html += `</tbody></table></div></div>`;
-
-  // BARANG MASUK / KELUAR
-  } else if (menu === 'masuk' || menu === 'keluar') {
-    currentTxType = (menu === 'masuk') ? 'MASUK': 'KELUAR';
-    let isMasuk = (menu === 'masuk');
-    let optionsBarang = '<option value="">-- Pilih SKU Barang --</option>';
-    
-    if (CACHE_DATA.master) {
-      for(let i=1; i<CACHE_DATA.master.length; i++) {
-        optionsBarang += `<option value="${CACHE_DATA.master[i][0]}">${CACHE_DATA.master[i][0]} - ${CACHE_DATA.master[i][1]} (Tersedia: ${CACHE_DATA.master[i][4]})</option>`;
-      }
-    }
-
-    let btnBarangBaru = '';
-    if (isMasuk && session.role !== 'Staf') {
-      btnBarangBaru = `
-        <div class="alert alert-primary border-0 p-3 mb-3 d-flex align-items-center justify-content-between rounded-3">
-          <div class="small text-primary-emphasis"><i class="bi bi-info-circle-fill me-2"></i>Barang datang belum terdaftar?</div>
-          <button class="btn btn-sm btn-primary fw-bold px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambah"><i class="bi bi-plus-lg me-1"></i>Buat Master Baru</button>
-        </div>`;
-    }
-
-    html = `
-      <div class="row">
+        
+        if(CACHE_DATA && CACHE_DATA.master && CACHE_DATA.master.length > 1) {
+            for(let i=1; i<CACHE_DATA.master.length; i++) {
+                let limits = Number(CACHE_DATA.master[i][4]) <= 5;
+                html += `<tr>
+                <td><span class="badge bg-light text-secondary border fw-bold px-2 py-1">${CACHE_DATA.master[i][0]}</span></td>
+                <td><div class="fw-bold text-dark">${CACHE_DATA.master[i][1]}</div></td>
+                <td><span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1">${CACHE_DATA.master[i][2]}</span></td>
+                <td class="text-muted">${CACHE_DATA.master[i][3]}</td>
+                <td><span class="badge ${limits ? 'bg-danger text-white' : 'bg-success bg-opacity-10 text-success'} badge-status">${CACHE_DATA.master[i][4]}</span></td>
+                <td class="text-muted">${CACHE_DATA.master[i][5]}</td>
+                <td><span class="text-dark fw-medium"><i class="bi bi-geo-alt text-primary me-1"></i>${CACHE_DATA.master[i][6]}</span></td>
+                </tr>`;
+            }
+        } else {
+            html += `<tr><td colspan="7" class="text-center text-muted py-5">Sistem belum mendeteksi adanya data master.</td></tr>`;
+        }
+        html += `</tbody></table></div></div>`;
+        
+    } else if(menu === 'masuk' || menu === 'keluar') {
+        currentTxType = (menu === 'masuk') ? 'MASUK' : 'KELUAR';
+        let isMasuk = (menu === 'masuk');
+        let optionsBarang = '<option value="">-- Pilih SKU Barang --</option>';
+        
+        if(CACHE_DATA && CACHE_DATA.master) {
+            for(let i=1; i<CACHE_DATA.master.length; i++) {
+                optionsBarang += `<option value="${CACHE_DATA.master[i][0]}">${CACHE_DATA.master[i][0]} - ${CACHE_DATA.master[i][1]} (Tersedia: ${CACHE_DATA.master[i][4]})</option>`;
+            }
+        }
+        
+        let btnBarangBaru = '';
+        if(isMasuk && session.role !== 'Staf') {
+            btnBarangBaru = `
+            <div class="alert alert-primary border-0 p-3 mb-3 d-flex align-items-center justify-content-between rounded-3">
+            <div class="small text-primary-emphasis"><i class="bi bi-info-circle-fill me-2"></i>Barang datang belum terdaftar?</div>
+            <button class="btn btn-sm btn-primary fw-bold px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambah"><i class="bi bi-plus-lg me-1"></i>Buat Master Baru</button>
+            </div>`;
+        }
+        
+        html = `
+        <div class="row">
         <div class="col-md-4">
-          <div class="mb-4"><h3 class="fw-bold text-dark m-0">Input Alur ${isMasuk ? 'Masuk' : 'Keluar'}</h3><p class="text-muted small">Catat mutasi fisik barang secara berkala.</p></div>
-          ${btnBarangBaru}
-          <div class="card card-custom p-4">
+            <div class="mb-4"><h3 class="fw-bold text-dark m-0">Input Alur ${isMasuk ? 'Masuk' : 'Keluar'}</h3><p class="text-muted small">Catat mutasi fisik barang secara berkala.</p></div>
+            ${btnBarangBaru}
+            <div class="card card-custom p-4">
             <form id="form-tx">
-              <div class="mb-3"><label class="small fw-bold text-secondary mb-1">Tanggal Transaksi</label><input type="date" id="tx-tanggal" class="form-control" value="${new Date().toISOString().split('T')[0]}"></div>
-              <div class="mb-3"><label class="small fw-bold text-secondary mb-1">Pilih Barang</label><select id="tx-kode" class="form-select" required>${optionsBarang}</select></div>
-              <div class="mb-3"><label class="small fw-bold text-secondary mb-1">Kuantitas / Jumlah</label><input type="number" id="tx-jumlah" class="form-control" required min="1" placeholder="0"></div>
-              <div class="mb-3 ${isMasuk ? '' : 'd-none'}"><label class="small fw-bold text-secondary mb-1">Pihak Pengirim / Vendor</label><input type="text" id="tx-vendor" class="form-control" placeholder="Contoh: PT Sumber Makmur"></div>
+                <div class="mb-3"><label class="small fw-bold text-secondary mb-1">Tanggal Transaksi</label><input type="date" id="tx-tanggal" class="form-control" value="${new Date().toISOString().split('T')[0]}"></div>
+                <div class="mb-3"><label class="small fw-bold text-secondary mb-1">Pilih Barang</label><select id="tx-kode" class="form-select" required>${optionsBarang}</select></div>
+                <div class="mb-3"><label class="small fw-bold text-secondary mb-1">Kuantitas / Jumlah</label><input type="number" id="tx-jumlah" class="form-control" required min="1" placeholder="0"></div>
+                <div class="mb-3 ${isMasuk ? '' : 'd-none'}"><label class="small fw-bold text-secondary mb-1">Pihak Pengirim / Vendor</label><input type="text" id="tx-vendor" class="form-control" placeholder="Contoh: PT Sumber Makmur"></div>
               <div class="mb-4"><label class="small fw-bold text-secondary mb-1">Keterangan / Notes</label><textarea id="tx-ket" class="form-control" rows="2" placeholder="Catatan opsional..."></textarea></div>
               <button type="button" class="btn ${isMasuk ? 'btn-success': 'btn-danger'} w-100 fw-bold py-2 shadow-sm" onclick="prosesTransaksi()"><i class="bi bi-check2-circle me-1"></i> Validasi Dokumen</button>
             </form>
