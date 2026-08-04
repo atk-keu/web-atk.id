@@ -152,17 +152,36 @@ function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGaga
     });
 }
 
-// 3. FUNGSI UTAMA LOGIN
+// 3. FUNGSI LOGIN YANG SUDAH BERSIH DARI KATA 'google'
 function login() {
     const user = document.getElementById('user').value;
     const pass = document.getElementById('pass').value;
     document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
     
+    // Menembak fungsi checkLogin di server Google lewat fetch API
     panggilBackend(
         "checkLogin", 
         [user, pass], 
-        setelahLoginSukses, // Menunjuk ke fungsi di bawah ini
+        setelahLoginSukses, 
         function(err) {
+            document.getElementById('login-msg').innerText = "Koneksi gagal: " + err.message;
+        }
+    );
+}
+
+
+// 3. FUNGSI LOGIN BARU YANG SUDAH DIPERBAIKI (TIDAK PAKAI google.script.run)
+function login() {
+    const user = document.getElementById('user').value;
+    const pass = document.getElementById('pass').value;
+    document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
+    
+    // Memanggil fungsi checkLogin yang ada di Kode.gs melalui jembatan API
+    panggilBackend(
+        "checkLogin",          // Nama fungsi asli di Kode.gs Anda
+        [user, pass],          // Parameter dikirim dalam bentuk Array
+        setelahLoginSukses,    // Fungsi yang akan dijalankan jika login benar
+        function(err) {        // Fungsi jika koneksi internet terputus
             document.getElementById('login-msg').innerText = "Koneksi gagal: " + err.message;
         }
     );
