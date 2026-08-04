@@ -103,12 +103,10 @@ body { background-color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif
 let session = { user: '', role: '' };
 let CACHE_DATA = {};
 let currentTxType = '';
-
 function login() {
   const user = document.getElementById('user').value;
   const pass = document.getElementById('pass').value;
   document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
-  
   google.script.run
     .withSuccessHandler(function(res) {
       if (res && res.success) {
@@ -125,6 +123,96 @@ function login() {
       document.getElementById('login-msg').innerText = "Terjadi kesalahan: " + err.message;
     })
     .checkLogin(user, pass);
+}
+// PASTIKAN MERUPAKAN ALAMAT SCRIPT.GOOGLE.COM, BUKAN GOOGLE.COM!
+const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec";
+
+function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGagal) {
+    // Gunakan URL_WEB_APP yang sudah kita deklarasikan di atas
+   fetch(URL_WEB_APP, {
+        method: "POST",
+        body: JSON.stringify({
+            namaFungsi: namaFungsi,
+            parameter: parameterArray
+        })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("Server Google Apps Script tidak merespons.");
+        return response.json();
+    })
+    .then(data => {
+        if (callbackSukses) callbackSukses(data);
+    })
+    .catch(error => {
+        console.error("Error Sistem:", error);
+        if (callbackGagal) callbackGagal(error);
+    });
+}
+
+function checkLogin(username, password) {
+  const ss = SpreadsheetApp.openById(ID_SPREADSHEET);
+  const sheet = ss.getSheetByName("Users");
+  if (!sheet) return { success: false, message: "Sheet Users tidak ditemukan" };
+  
+  const data = sheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    var barisData = data[i];
+    var usernameDiSheet = barisData[0]; // Kolom A
+    var passwordDiSheet = barisData[1]; // Kolom B
+    var roleDiSheet     = barisData[2]; // Kolom C
+    
+    // Bandingkan data input dengan data di Spreadsheet secara presisi
+    if (usernameDiSheet.toString().trim() === username.toString().trim() && 
+        passwordDiSheet.toString().trim() === password.toString().trim()) {
+      return { success: true, role: roleDiSheet, user: usernameDiSheet };
+    }
+  }
+  return { success: false };
+}
+
+// 4. FUNGSI LANJUTAN SETELAH LOGIN (YANG TADI HILANG / ERROR)
+function setelahLoginSukses(response) {
+    if (response && response.success) {
+        // Menyimpan data sesi login dari server Google
+        session = response; 
+        
+        // Sembunyikan halaman login, tampilkan halaman utama aplikasi
+        document.getElementById('login-page').classList.add('d-none');
+        document.getElementById('main-page').classList.remove('d-none');
+        document.getElementById('display-role').innerText = session.role;
+        
+        // Atur hak akses menu bar berdasarkan tingkatan Role pengguna
+        var elemenMenuMasuk = document.getElementById("menuBarangMasuk");
+        if (elemenMenuMasuk) {
+            if (session.role === "Staf") {
+                elemenMenuMasuk.classList.add('d-none');
+            } else {
+                elemenMenuMasuk.classList.remove('d-none');
+            }
+        }
+        
+        // Alihkan halaman ke Dashboard Utama
+        showPage('dashboard');
+    } else {
+        document.getElementById('login-msg').innerText = "Kombinasi Username & Password salah!";
+    }
+}
+
+// 4. FUNGSI SHOWPAGE BARU UNTUK AMBIL DATA DI GITHUB
+function showPage(page) {
+    document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
+    let activeNav = document.getElementById('nav-' + page);
+    if(activeNav) activeNav.classList.add('active');
+    
+    document.getElementById('loading-spinner').classList.remove('d-none');
+    document.getElementById('konten-dinamis').innerHTML = '';
+    
+    // Mengganti google.script.run.getInventoryData()
+    panggilBackend("getInventoryData", [], function(data) {
+        CACHE_DATA = data;
+        document.getElementById('loading-spinner').classList.add('d-none');
+        renderHalaman(page);
+    });
 }
 
 function showPage(page) {
