@@ -201,26 +201,21 @@ function setelahLoginSukses(response) {
 }
 
 function showPage(page) {
-  document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
-  let activeNav = document.getElementById('nav-' + page);
-  if (activeNav) activeNav.classList.add('active');
-  
-  document.getElementById('loading-spinner').classList.remove('d-none');
-  document.getElementById('konten-dinamis').innerHTML = '';
-  
-  google.script.run
-    .withSuccessHandler(function(data) {
-      CACHE_DATA = data || { master: [], logs: [] };
-      document.getElementById('loading-spinner').classList.add('d-none');
-      renderHalaman(page);
-    })
-    .withFailureHandler(function(err) {
-      document.getElementById('loading-spinner').classList.add('d-none');
-      alert("Gagal mengambil data: " + err.message);
-    })
-    .getInventoryData();
+    document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
+    let activeNav = document.getElementById('nav-' + page);
+    if(activeNav) activeNav.classList.add('active');
+    
+    document.getElementById('loading-spinner').classList.remove('d-none');
+    document.getElementById('konten-dinamis').innerHTML = '';
+    
+    // Mengganti google.script.run.getInventoryData()
+    panggilBackend("getInventoryData", [], function(data) {
+        CACHE_DATA = data;
+        document.getElementById('loading-spinner').classList.add('d-none');
+        renderHalaman(page);
+    });
 }
-
+  
 function renderHalaman(menu) {
   let html = '';
   
