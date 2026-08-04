@@ -132,16 +132,15 @@ const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3
 
 function panggilBackend(namaFungsi, parameterArray, callbackSukses, callbackGagal) {
     // Gunakan URL_WEB_APP yang sudah kita deklarasikan di atas
-    fetch(URL_WEB_APP, {
+   fetch(URL_WEB_APP, {
         method: "POST",
-        // JANGAN gunakan header Content-Type application/json agar tidak memicu Pre-flight CORS
         body: JSON.stringify({
             namaFungsi: namaFungsi,
             parameter: parameterArray
         })
     })
     .then(response => {
-        if (!response.ok) throw new Error("Terjadi gangguan jaringan pada server Google.");
+        if (!response.ok) throw new Error("Server Google Apps Script tidak merespons.");
         return response.json();
     })
     .then(data => {
