@@ -450,6 +450,25 @@ function prosesTransaksi() {
       showPage(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
     });
 }
+  // FUNGSI UNTUK LOGOUT DAN MENGUNCI KEMBALI APLIKASI
+function logout() {
+  // 1. Hapus data sesi dari memori browser
+  localStorage.removeItem("user_session");
+  
+  // 2. Reset variabel sesi di JavaScript
+  session = { user: '', role: '' };
+  
+  // 3. Sembunyikan Halaman Utama & Tampilkan Halaman Login
+  document.getElementById('main-page').classList.add('d-none');
+  document.getElementById('login-page').classList.remove('d-none');
+  
+  // 4. Bersihkan form input login
+  if (document.getElementById('user')) document.getElementById('user').value = '';
+  if (document.getElementById('pass')) document.getElementById('pass').value = '';
+  if (document.getElementById('login-msg')) document.getElementById('login-msg').innerText = '';
+  
+  alert("Anda telah berhasil keluar. Aplikasi terkunci kembali.");
+}
 </script>
 </body>
 </html>
