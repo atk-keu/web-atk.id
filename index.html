@@ -213,7 +213,35 @@ function callGAS(payload) {
     return response.json();
   });
 }
+ // Fungsi Penjaga Sesi saat Halaman Dibuka
+function checkAuth() {
+  const savedSession = localStorage.getItem("user_session");
+  const loginPage = document.getElementById('login-page');
+  const mainPage = document.getElementById('main-page');
 
+  if (savedSession) {
+    try {
+      session = JSON.parse(savedSession);
+      if (session && session.user) {
+        // Jika ADA sesi -> Buka Aplikasi
+        loginPage.classList.add('d-none');
+        mainPage.classList.remove('d-none');
+        if (document.getElementById('display-role')) {
+          document.getElementById('display-role').innerText = session.role || 'User';
+        }
+        showPage('dashboard');
+        return;
+      }
+    } catch(e) {
+      localStorage.removeItem("user_session");
+    }
+  }
+
+  // Jika TIDAK ADA sesi -> Pastikan Terkunci
+  mainPage.classList.add('d-none');
+  loginPage.classList.remove('d-none');
+}
+  
 function login() {
   const user = document.getElementById('user').value.trim();
   const pass = document.getElementById('pass').value.trim();
@@ -248,34 +276,7 @@ function login() {
       msgEl.innerText = "Error: " + err.message;
     });
 }
- // Fungsi Penjaga Sesi saat Halaman Dibuka
-function checkAuth() {
-  const savedSession = localStorage.getItem("user_session");
-  const loginPage = document.getElementById('login-page');
-  const mainPage = document.getElementById('main-page');
 
-  if (savedSession) {
-    try {
-      session = JSON.parse(savedSession);
-      if (session && session.user) {
-        // Jika ADA sesi -> Buka Aplikasi
-        loginPage.classList.add('d-none');
-        mainPage.classList.remove('d-none');
-        if (document.getElementById('display-role')) {
-          document.getElementById('display-role').innerText = session.role || 'User';
-        }
-        showPage('dashboard');
-        return;
-      }
-    } catch(e) {
-      localStorage.removeItem("user_session");
-    }
-  }
-
-  // Jika TIDAK ADA sesi -> Pastikan Terkunci
-  mainPage.classList.add('d-none');
-  loginPage.classList.remove('d-none');
-}
 // FUNGSI LOGOUT
 function logout() {
   localStorage.removeItem("user_session");
