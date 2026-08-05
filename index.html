@@ -393,10 +393,8 @@ function renderHalaman(menu) {
         </div>
       </div>`;
   }
-
   document.getElementById('konten-dinamis').innerHTML = html;
 }
-
 function simpanBaru() {
   let data = {
     kode: document.getElementById('in-kode').value.trim(),
@@ -406,16 +404,12 @@ function simpanBaru() {
     satuan: document.getElementById('in-sat').value.trim(),
     rak: document.getElementById('in-rak').value.trim()
   };
-
   if (!data.kode || !data.nama || !data.satuan) return alert('Mohon lengkapi kolom bertanda wajib (Kode, Nama, Satuan)!');
-
   let modalEl = document.getElementById('modalTambah');
   let modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
   modalInstance.hide();
-
   document.getElementById('konten-dinamis').innerHTML = '';
   document.getElementById('loading-spinner').classList.remove('d-none');
-
   callGAS({ action: "addNewItem", data: data })
     .then(msg => {
       alert(typeof msg === 'string' ? msg : "Data master berhasil disimpan!");
@@ -451,7 +445,6 @@ function prosesTransaksi() {
     
     data.pin = inputPin.trim(); // Kirim PIN yang diinput ke backend
   }
-
   document.getElementById('konten-dinamis').innerHTML = '';
   document.getElementById('loading-spinner').classList.remove('d-none');
 
@@ -470,24 +463,6 @@ function prosesTransaksi() {
       showPage(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
     });
 }
-  // Jalankan saat pertama kali web dibuka
-window.addEventListener('DOMContentLoaded', () => {
-  const savedSession = localStorage.getItem("user_session");
-  
-  if (savedSession) {
-    // Jika ada sesi login tersimpan
-    session = JSON.parse(savedSession);
-    document.getElementById('login-page').classList.add('d-none');
-    document.getElementById('main-page').classList.remove('d-none');
-    document.getElementById('display-role').innerText = session.role;
-    showPage('dashboard');
-  } else {
-    // JIKA TIDAK ADA SESI, KUNCI TOTAL DAN TAMPILKAN LOGIN
-    document.getElementById('login-page').classList.remove('d-none');
-    document.getElementById('main-page').classList.add('d-none');
-  }
-});
-
 </script>
 </body>
 </html>
