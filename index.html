@@ -138,7 +138,13 @@ body {
     </div>
   </div>
 </div>
-
+<!-- Tombol Logout di Header Atas -->
+<div class="d-flex align-items-center gap-3">
+  <span class="badge bg-primary px-3 py-2" id="display-role">Admin</span>
+  <button onclick="logout()" class="btn btn-sm btn-danger fw-bold">
+    <i class="bi bi-box-arrow-right me-1"></i> Logout
+  </button>
+</div>
 <!-- HALAMAN UTAMA -->
 <div id="main-page" class="wrapper d-none">
   <!-- SIDEBAR -->
@@ -155,12 +161,7 @@ body {
       <li class="nav-item mt-auto mb-3"><a class="nav-link text-danger" onclick="location.reload()"><i class="bi bi-power"></i> Keluar / Logout</a></li>
     </ul>
   </nav>
-<!-- Tombol Logout di Sidebar -->
-<div class="p-3 mt-auto">
-  <button onclick="logout()" class="btn btn-outline-danger w-100 fw-bold shadow-sm">
-    <i class="bi bi-box-arrow-right me-2"></i>Keluar / Logout
-  </button>
-</div>
+  
   <!-- KONTEN UTAMA -->
   <main id="content">
     <div id="loading-spinner" class="text-center my-5 d-none">
@@ -381,7 +382,6 @@ function renderHalaman(menu) {
 
     let logData = CACHE_DATA.logs || [];
     let filteredLogs = logData.filter(l => l[1] === currentTxType).reverse();
-
     filteredLogs.forEach(log => {
       html += `<tr>
         <td class="text-muted fw-medium">${log[0]}</td>
@@ -432,6 +432,26 @@ function simpanBaru() {
     });
 }
 
+// Cek status login saat halaman pertama kali dimuat
+document.addEventListener('DOMContentLoaded', () => {
+  const savedSession = localStorage.getItem("user_session");
+  
+  if (savedSession) {
+    // Jika user sudah login sebelumnya, buka aplikasi
+    session = JSON.parse(savedSession);
+    document.getElementById('login-page').classList.add('d-none');
+    document.getElementById('main-page').classList.remove('d-none');
+    if (document.getElementById('display-role')) {
+      document.getElementById('display-role').innerText = session.role;
+    }
+    showPage('dashboard');
+  } else {
+    // Jika belum login / sudah logout, KUNCI TOTAL aplikasi
+    document.getElementById('login-page').classList.remove('d-none');
+    document.getElementById('main-page').classList.add('d-none');
+  }
+});
+  
 function prosesTransaksi() {
   let data = {
     tanggal: document.getElementById('tx-tanggal').value,
@@ -474,6 +494,25 @@ function prosesTransaksi() {
       alert("Gagal memproses transaksi: " + err.message);
       showPage(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
     });
+}
+  // FUNGSI UNTUK LOGOUT DAN MENGUNCI KEMBALI APLIKASI
+function logout() {
+  // 1. Hapus data sesi dari memori browser
+  localStorage.removeItem("user_session");
+  
+  // 2. Reset variabel sesi di JavaScript
+  session = { user: '', role: '' };
+  
+  // 3. Sembunyikan Halaman Utama & Tampilkan Halaman Login
+  document.getElementById('main-page').classList.add('d-none');
+  document.getElementById('login-page').classList.remove('d-none');
+  
+  // 4. Bersihkan form input login
+  if (document.getElementById('user')) document.getElementById('user').value = '';
+  if (document.getElementById('pass')) document.getElementById('pass').value = '';
+  if (document.getElementById('login-msg')) document.getElementById('login-msg').innerText = '';
+  
+  alert("Anda telah berhasil keluar. Aplikasi terkunci kembali.");
 }
   </script>
 </body>
