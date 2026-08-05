@@ -248,7 +248,7 @@ function login() {
       msgEl.innerText = "Error: " + err.message;
     });
 }
-   // Fungsi Penjaga Sesi saat Halaman Dibuka
+ // Fungsi Penjaga Sesi saat Halaman Dibuka
 function checkAuth() {
   const savedSession = localStorage.getItem("user_session");
   const loginPage = document.getElementById('login-page');
@@ -276,7 +276,6 @@ function checkAuth() {
   mainPage.classList.add('d-none');
   loginPage.classList.remove('d-none');
 }
-
 // FUNGSI LOGOUT
 function logout() {
   localStorage.removeItem("user_session");
