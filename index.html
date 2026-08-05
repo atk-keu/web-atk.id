@@ -138,13 +138,7 @@ body {
     </div>
   </div>
 </div>
-<!-- Tombol Logout di Header Atas -->
-<div class="d-flex align-items-center gap-3">
-  <span class="badge bg-primary px-3 py-2" id="display-role">Admin</span>
-  <button onclick="logout()" class="btn btn-sm btn-danger fw-bold">
-    <i class="bi bi-box-arrow-right me-1"></i> Logout
-  </button>
-</div>
+
 <!-- HALAMAN UTAMA -->
 <div id="main-page" class="wrapper d-none">
   <!-- SIDEBAR -->
@@ -161,7 +155,7 @@ body {
       <li class="nav-item mt-auto mb-3"><a class="nav-link text-danger" onclick="location.reload()"><i class="bi bi-power"></i> Keluar / Logout</a></li>
     </ul>
   </nav>
-  
+
   <!-- KONTEN UTAMA -->
   <main id="content">
     <div id="loading-spinner" class="text-center my-5 d-none">
@@ -234,10 +228,7 @@ function login() {
   callGAS({ action: "checkLogin", user: user, pass: pass })
     .then(res => {
       if (res && res.success) {
-        // SIMPAN SESI KE BROWSER
-        session = { user: user, role: res.role };
-        localStorage.setItem("user_session", JSON.stringify(session));
-
+        session = res;
         document.getElementById('login-page').classList.add('d-none');
         document.getElementById('main-page').classList.remove('d-none');
         document.getElementById('display-role').innerText = session.role;
@@ -382,6 +373,7 @@ function renderHalaman(menu) {
 
     let logData = CACHE_DATA.logs || [];
     let filteredLogs = logData.filter(l => l[1] === currentTxType).reverse();
+
     filteredLogs.forEach(log => {
       html += `<tr>
         <td class="text-muted fw-medium">${log[0]}</td>
@@ -432,26 +424,6 @@ function simpanBaru() {
     });
 }
 
-// Cek status login saat halaman pertama kali dimuat
-document.addEventListener('DOMContentLoaded', () => {
-  const savedSession = localStorage.getItem("user_session");
-  
-  if (savedSession) {
-    // Jika user sudah login sebelumnya, buka aplikasi
-    session = JSON.parse(savedSession);
-    document.getElementById('login-page').classList.add('d-none');
-    document.getElementById('main-page').classList.remove('d-none');
-    if (document.getElementById('display-role')) {
-      document.getElementById('display-role').innerText = session.role;
-    }
-    showPage('dashboard');
-  } else {
-    // Jika belum login / sudah logout, KUNCI TOTAL aplikasi
-    document.getElementById('login-page').classList.remove('d-none');
-    document.getElementById('main-page').classList.add('d-none');
-  }
-});
-  
 function prosesTransaksi() {
   let data = {
     tanggal: document.getElementById('tx-tanggal').value,
@@ -465,29 +437,12 @@ function prosesTransaksi() {
     return alert('Silakan lengkapi Tanggal, Jenis Barang, dan Jumlah mutasi fisik yang valid!');
   }
 
-  // Khusus Barang Masuk, Minta PIN Admin via Pop-up
-  if (currentTxType === 'MASUK') {
-    let inputPin = prompt("🔒 Masukkan PIN Otentikasi Admin:");
-    
-    if (inputPin === null) return; // Jika klik batal
-    if (inputPin.trim() === "") {
-      return alert("PIN Admin tidak boleh kosong!");
-    }
-    
-    data.pin = inputPin.trim(); // Kirim PIN yang diinput ke backend
-  }
-
   document.getElementById('konten-dinamis').innerHTML = '';
   document.getElementById('loading-spinner').classList.remove('d-none');
 
   callGAS({ action: "submitTransaction", type: currentTxType, data: data, user: session.user })
-    .then(res => {
-      if (typeof res === 'object' && !res.success) {
-        alert("❌ " + res.message);
-      } else {
-        let msg = typeof res === 'object' ? res.message : res;
-        alert("✅ " + (msg || "Transaksi berhasil divalidasi!"));
-      }
+    .then(msg => {
+      alert(typeof msg === 'string' ? msg : "Transaksi berhasil divalidasi!");
       showPage(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
     })
     .catch(err => {
@@ -495,6 +450,6 @@ function prosesTransaksi() {
       showPage(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
     });
 }
-  </script>
+</script>
 </body>
 </html>
