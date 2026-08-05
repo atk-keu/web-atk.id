@@ -1,111 +1,105 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Manajemen Gudang</title>
-  <!-- Bootstrap 5 CSS & Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-  <style>
-    .pointer { cursor: pointer; }
-  </style>
+<meta charset="UTF-8">
+<base target="_top">
+<title>Sistem Inventaris Gudang v2.1</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<style>
+:root {
+  --sb-bg: #1e293b;
+  --sb-hover: #334155;
+  --accent: #3b82f6;
+}
+body { background-color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif; color: #334155; }
+.sidebar { min-height: 100vh; background: var(--sb-bg); color: #cbd5e1; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
+.sidebar-brand { padding: 24px; border-bottom: 1px solid #334155; text-align: center; }
+.nav-link { color: #94a3b8; cursor: pointer; padding: 12px 20px; font-weight: 500; border-radius: 8px; margin: 4px 12px; display: flex; align-items: center; gap: 12px; transition: all 0.2s ease; }
+.nav-link:hover, .nav-link.active { color: white; background: var(--sb-hover); }
+.nav-link.active { background: var(--accent); }
+#login-page { height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+.login-card { border: none; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+.card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); background: white; }
+.table th { font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; color: #64748b; background-color: #f8fafc; }
+.badge-status { padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
+</style>
 </head>
-<body class="bg-light">
+<body>
 
-  <!-- ==================== HALAMAN LOGIN ==================== -->
-  <div id="login-page" class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="card shadow-sm p-4" style="max-width: 400px; width: 100%;">
-      <h3 class="text-center mb-4 fw-bold">Login Sistem</h3>
-      <div class="mb-3">
-        <label for="user" class="form-label">Username</label>
-        <input type="text" id="user" class="form-control" placeholder="Masukkan username">
-      </div>
-      <div class="mb-3">
-        <label for="pass" class="form-label">Password</label>
-        <input type="password" id="pass" class="form-control" placeholder="Masukkan password">
-      </div>
-      <button class="btn btn-primary w-100 fw-bold py-2 mb-2" onclick="login()">Login</button>
-      <div id="login-msg" class="text-danger small text-center fw-semibold"></div>
+<!-- HALAMAN LOGIN -->
+<div id="login-page">
+  <div class="card login-card p-4" style="width: 380px;">
+    <div class="card-body text-center p-3">
+      <div class="mb-3 text-primary"><i class="bi bi-box-seam-fill" style="font-size: 3rem;"></i></div>
+      <h3 class="mb-1 fw-bold text-dark">Inventory System</h3>
+      <p class="text-muted small mb-4">Silakan masuk untuk mengelola stok</p>
+      <input type="text" id="user" class="form-control form-control-lg mb-2 fs-6" placeholder="Username">
+      <input type="password" id="pass" class="form-control form-control-lg mb-4 fs-6" placeholder="Password">
+      <button onclick="login()" class="btn btn-primary btn-lg w-100 fs-6 fw-bold shadow-sm">Masuk Aplikasi</button>
+      <div id="login-msg" class="text-danger mt-3 small fw-semibold"></div>
     </div>
   </div>
+</div>
 
-  <!-- ==================== HALAMAN UTAMA ==================== -->
-  <div id="main-page" class="d-none">
-    <!-- Navbar Navigasi -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-      <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="#">GUDANG APP</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <a class="nav-link pointer" onclick="showPage('dashboard')">Dashboard</a>
-            </li>
-            <!-- Menu Barang Masuk (Hanya Muncul untuk Admin) -->
-            <li id="menuBarangMasuk" class="nav-item d-none">
-              <a class="nav-link pointer" onclick="showPage('masuk')">Barang Masuk</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link pointer" onclick="showPage('keluar')">Barang Keluar</a>
-            </li>
-          </ul>
-          <div class="d-flex align-items-center text-white me-3">
-            <i class="bi bi-person-circle me-2"></i>
-            <span id="display-role" class="badge bg-secondary">Role</span>
-          </div>
-          <button class="btn btn-outline-light btn-sm" onclick="logout()">Logout</button>
-        </div>
+<!-- HALAMAN UTAMA -->
+<div id="main-page" class="container-fluid d-none">
+  <div class="row">
+    <!-- SIDEBAR -->
+    <nav class="col-md-2 sidebar d-md-block px-0 position-fixed">
+      <div class="sidebar-brand">
+        <h5 class="fw-bold text-white mb-1"><i class="bi bi-box-seam me-2"></i>Direktorat Keuangan</h5>
+        <span id="display-role" class="badge bg-primary px-2 py-1 mt-1 small"></span>
       </div>
+      <ul class="nav flex-column mt-3">
+        <li class="nav-item"><a class="nav-link" id="nav-dashboard" onclick="showPage('dashboard')"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" id="nav-daftar" onclick="showPage('daftar')"><i class="bi bi-collection-fill"></i> Daftar Barang</a></li>
+        <li class="nav-item"><a class="nav-link" id="nav-masuk" onclick="showPage('masuk')"><i class="bi bi-box-arrow-in-down"></i> Barang Masuk</a></li>
+        <li class="nav-item"><a class="nav-link" id="nav-keluar" onclick="showPage('keluar')"><i class="bi bi-box-arrow-up"></i> Barang Keluar</a></li>
+        <li class="nav-item"><a class="nav-link text-danger mt-5" onclick="location.reload()"><i class="bi bi-power"></i> Keluar / Logout</a></li>
+      </ul>
     </nav>
 
-    <!-- Konten Halaman -->
-    <div class="container my-4">
-      
-      <!-- Page 1: Dashboard -->
-      <div id="page-dashboard" class="page-content">
-        <h2>Selamat Datang</h2>
-        <p class="text-muted">Pilih menu navigasi di atas untuk memulai transaksi inventaris.</p>
-      </div>
-
-      <!-- Page 2: Form Transaksi (Masuk / Keluar) -->
-      <div id="page-form" class="page-content d-none">
-        <div class="card shadow-sm p-4 mx-auto" style="max-width: 500px;">
-          <h4 id="form-title" class="fw-bold mb-3">Form Transaksi</h4>
-          
-          <div class="mb-3">
-            <label for="tanggal" class="form-label">Tanggal</label>
-            <input type="date" id="tanggal" class="form-control">
-          </div>
-          <div class="mb-3">
-            <label for="kode_barang" class="form-label">Kode SKU Barang</label>
-            <input type="text" id="kode_barang" class="form-control" placeholder="Contoh: SKU-001">
-          </div>
-          <div class="mb-3">
-            <label for="jumlah" class="form-label">Jumlah</label>
-            <input type="number" id="jumlah" class="form-control" min="1" placeholder="0">
-          </div>
-          <div class="mb-3">
-            <label for="keterangan" class="form-label">Keterangan / Alasan</label>
-            <textarea id="keterangan" class="form-control" rows="2" placeholder="Catatan tambahan..."></textarea>
-          </div>
-
-          <button id="btn-submit" type="button" class="btn btn-primary w-100 fw-bold py-2 shadow-sm pointer" onclick="prosesTransaksi()">
-            <i class="bi bi-check2-circle me-1"></i> Validasi Dokumen
-          </button>
-          <div id="trans-msg" class="text-center mt-2 small"></div>
+    <!-- CONTENT AREA -->
+    <main class="col-md-10 ms-sm-auto px-4" style="margin-left: 16.666667%;">
+      <div class="pt-4 pb-2 mb-3">
+        <div id="loading-spinner" class="text-center my-5 d-none">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2 text-muted small">Memuat data terbaru...</p>
         </div>
+        <div id="konten-dinamis"></div>
       </div>
+    </main>
+  </div>
+</div>
 
+<!-- MODAL TAMBAH BARANG BARU -->
+<div class="modal fade" id="modalTambah" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-0 bg-light p-3">
+        <h5 class="fw-bold m-0 text-dark"><i class="bi bi-plus-square-fill text-primary me-2"></i>Daftarkan Master Barang Baru</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <p class="text-muted small mb-3">Formulir ini digunakan jika barang yang datang belum pernah terdaftar sama sekali di sistem master data.</p>
+        <div class="mb-2"><label class="small fw-semibold text-secondary">Kode SKU Barang</label><input type="text" id="in-kode" class="form-control" placeholder="Contoh: BRG-001"></div>
+        <div class="mb-2"><label class="small fw-semibold text-secondary">Nama Lengkap Barang</label><input type="text" id="in-nama" class="form-control" placeholder="Contoh: Kertas HVS A4 80gr"></div>
+        <div class="mb-2"><label class="small fw-semibold text-secondary">Kategori</label><input type="text" id="in-kat" class="form-control" placeholder="Contoh: ATK / Elektronik"></div>
+        <div class="mb-2"><label class="small fw-semibold text-secondary">Stok Awal Sistem</label><input type="number" id="in-stok" class="form-control" value="0"></div>
+        <div class="mb-2"><label class="small fw-semibold text-secondary">Satuan Ukur</label><input type="text" id="in-sat" class="form-control" placeholder="Contoh: Pcs / Pack / Box"></div>
+        <div class="mb-3"><label class="small fw-semibold text-secondary">Lokasi Penempatan Rak</label><input type="text" id="in-rak" class="form-control" placeholder="Contoh: RAK-A1"></div>
+      </div>
+      <div class="modal-footer border-0 bg-light p-2">
+        <button type="button" class="btn btn-secondary small" data-bs-dismiss="modal">Batal</button>
+        <button onclick="simpanBaru()" class="btn btn-primary px-4 fw-bold">Simpan Master Data</button>
+      </div>
     </div>
   </div>
+</div>
 
-  <!-- JAVASCRIPT LOGIC -->
-  <script>
-    // ⚠️ MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec"; 
+// ⚠️ MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
+    const GAS_URL = "URL_WEB_APP_GOOGLE_APPS_SCRIPT_ANDA_DI_SINI"; 
 
     // Variabel Global
     var session = null;
