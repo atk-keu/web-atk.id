@@ -197,29 +197,38 @@ let session = { user: '', role: '' };
 let CACHE_DATA = {};
 let currentTxType = '';
 
+// Ganti nilai ini dengan URL Deployment Google Apps Script Anda (berakhiran /exec)
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec"; 
+
 function login() {
   const user = document.getElementById('user').value;
   const pass = document.getElementById('pass').value;
   document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
-  
-  google.script.run
-    .withSuccessHandler(function(res) {
-      if (res && res.success) {
-        session = res;
-        document.getElementById('login-page').classList.add('d-none');
-        document.getElementById('main-page').classList.remove('d-none');
-        document.getElementById('display-role').innerText = session.role;
-        showPage('dashboard');
-      } else {
-        document.getElementById('login-msg').innerText = "Kombinasi Username & Password salah!";
-      }
-    })
-    .withFailureHandler(function(err) {
-      document.getElementById('login-msg').innerText = "Terjadi kesalahan: " + err.message;
-    })
-    .checkLogin(user, pass);
-}
 
+  fetch(GAS_API_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "checkLogin",
+      user: user,
+      pass: pass
+    })
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res && res.success) {
+      session = res;
+      document.getElementById('login-page').classList.add('d-none');
+      document.getElementById('main-page').classList.remove('d-none');
+      document.getElementById('display-role').innerText = session.role;
+      showPage('dashboard');
+    } else {
+      document.getElementById('login-msg').innerText = "Kombinasi Username & Password salah!";
+    }
+  })
+  .catch(err => {
+    document.getElementById('login-msg').innerText = "Gagal terhubung ke server: " + err.message;
+  });
+}
 function showPage(page) {
   document.querySelectorAll('#sidebar .nav-link').forEach(el => el.classList.remove('active'));
   let activeNav = document.getElementById('nav-' + page);
