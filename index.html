@@ -214,37 +214,6 @@ function callGAS(payload) {
   });
 }
 
-// -------------------------------------------------------------
-// SYSTEM INITIATOR & OTENTIKASI SESI (KUNCI OTOMATIS)
-// -------------------------------------------------------------
-function checkAuth() {
-  const savedSession = localStorage.getItem("user_session");
-  const loginPage = document.getElementById('login-page');
-  const mainPage = document.getElementById('main-page');
-
-  if (savedSession) {
-    try {
-      session = JSON.parse(savedSession);
-      if (session && session.user) {
-        // JIKA ADA SESI VALID -> TAMPILKAN APLIKASI
-        loginPage.classList.add('d-none');
-        mainPage.classList.remove('d-none');
-        if (document.getElementById('display-role')) {
-          document.getElementById('display-role').innerText = session.role || 'User';
-        }
-        showPage('dashboard');
-        return;
-      }
-    } catch(e) {
-      localStorage.removeItem("user_session");
-    }
-  }
-
-  // JIKA TIDAK ADA SESI / BELUM LOGIN -> KUNCI TOTAL
-  mainPage.classList.add('d-none');
-  loginPage.classList.remove('d-none');
-}
-
 function login() {
   const user = document.getElementById('user').value.trim();
   const pass = document.getElementById('pass').value.trim();
