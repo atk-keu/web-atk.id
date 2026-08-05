@@ -3,26 +3,118 @@
 <head>
 <meta charset="UTF-8">
 <base target="_top">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sistem Inventaris Gudang v2.1</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 <style>
-
 :root {
-  --sb-bg: #1e293b;
-  --sb-hover: #334155;
-  --accent: #3b82f6;
+  --sb-bg: #0f172a;
+  --sb-hover: #1e293b;
+  --accent: #2563eb;
+  --main-bg: #f8fafc;
 }
-body { background-color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif; color: #334155; }
-.sidebar { min-height: 100vh; background: var(--sb-bg); color: #cbd5e1; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
-.sidebar-brand { padding: 24px; border-bottom: 1px solid #334155; text-align: center; }
-.nav-link { color: #94a3b8; cursor: pointer; padding: 12px 20px; font-weight: 500; border-radius: 8px; margin: 4px 12px; display: flex; align-items: center; gap: 12px; transition: all 0.2s ease; }
-.nav-link:hover, .nav-link.active { color: white; background: var(--sb-hover); }
-.nav-link.active { background: var(--accent); }
-#login-page { height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-.login-card { border: none; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-.card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); background: white; }
-.table th { font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; color: #64748b; background-color: #f8fafc; }
+
+body { 
+  background-color: var(--main-bg); 
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; 
+  color: #334155; 
+  overflow-x: hidden;
+}
+
+/* Layout Wrapper */
+.wrapper {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Sidebar Styling */
+#sidebar {
+  min-width: 260px;
+  max-width: 260px;
+  background: var(--sb-bg);
+  color: #cbd5e1;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.sidebar-brand { 
+  padding: 20px; 
+  border-bottom: 1px solid #1e293b; 
+  text-align: center; 
+}
+
+.nav-link { 
+  color: #94a3b8; 
+  cursor: pointer; 
+  padding: 12px 18px; 
+  font-weight: 500; 
+  border-radius: 8px; 
+  margin: 4px 12px; 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  transition: all 0.2s ease; 
+}
+
+.nav-link:hover { color: #f8fafc; background: var(--sb-hover); }
+.nav-link.active { color: #ffffff; background: var(--accent); }
+
+/* Main Content Area */
+#content {
+  width: calc(100% - 260px);
+  margin-left: 260px;
+  min-height: 100vh;
+  padding: 30px;
+  transition: all 0.3s;
+}
+
+/* Login Card Styling */
+#login-page { 
+  height: 100vh; 
+  width: 100vw;
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2000;
+}
+
+.login-card { 
+  border: none; 
+  border-radius: 16px; 
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4); 
+  background: rgba(255, 255, 255, 0.98); 
+}
+
+/* Common UI Component Enhancements */
+.card-custom { 
+  border: none; 
+  border-radius: 12px; 
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1); 
+  background: white; 
+}
+
+.table th { 
+  font-weight: 600; 
+  text-transform: uppercase; 
+  font-size: 0.725rem; 
+  letter-spacing: 0.5px; 
+  color: #64748b; 
+  background-color: #f1f5f9; 
+  border-bottom: 2px solid #e2e8f0;
+}
+
 .badge-status { padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
 </style>
 </head>
@@ -31,12 +123,16 @@ body { background-color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif
 <!-- HALAMAN LOGIN -->
 <div id="login-page">
   <div class="card login-card p-4" style="width: 380px;">
-    <div class="card-body text-center p-3">
+    <div class="card-body text-center p-2">
       <div class="mb-3 text-primary"><i class="bi bi-box-seam-fill" style="font-size: 3rem;"></i></div>
-      <h3 class="mb-1 fw-bold text-dark">Inventory System</h3>
+      <h4 class="mb-1 fw-bold text-dark">Inventory System</h4>
       <p class="text-muted small mb-4">Silakan masuk untuk mengelola stok</p>
-      <input type="text" id="user" class="form-control form-control-lg mb-2 fs-6" placeholder="Username">
-      <input type="password" id="pass" class="form-control form-control-lg mb-4 fs-6" placeholder="Password">
+      <div class="mb-2 text-start">
+        <input type="text" id="user" class="form-control form-control-lg fs-6" placeholder="Username">
+      </div>
+      <div class="mb-4 text-start">
+        <input type="password" id="pass" class="form-control form-control-lg fs-6" placeholder="Password">
+      </div>
       <button onclick="login()" class="btn btn-primary btn-lg w-100 fs-6 fw-bold shadow-sm">Masuk Aplikasi</button>
       <div id="login-msg" class="text-danger mt-3 small fw-semibold"></div>
     </div>
@@ -44,34 +140,30 @@ body { background-color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif
 </div>
 
 <!-- HALAMAN UTAMA -->
-<div id="main-page" class="container-fluid d-none">
-  <div class="row">
-    <!-- SIDEBAR -->
-    <nav class="col-md-2 sidebar d-md-block px-0 position-fixed">
-      <div class="sidebar-brand">
-        <h5 class="fw-bold text-white mb-1"><i class="bi bi-box-seam me-2"></i>Direktorat Keuangan</h5>
-        <span id="display-role" class="badge bg-primary px-2 py-1 mt-1 small"></span>
-      </div>
-      <ul class="nav flex-column mt-3">
-        <li class="nav-item"><a class="nav-link" id="nav-dashboard" onclick="showPage('dashboard')"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" id="nav-daftar" onclick="showPage('daftar')"><i class="bi bi-collection-fill"></i> Daftar Barang</a></li>
-        <li class="nav-item"><a class="nav-link" id="nav-masuk" onclick="showPage('masuk')"><i class="bi bi-box-arrow-in-down"></i> Barang Masuk</a></li>
-        <li class="nav-item"><a class="nav-link" id="nav-keluar" onclick="showPage('keluar')"><i class="bi bi-box-arrow-up"></i> Barang Keluar</a></li>
-        <li class="nav-item"><a class="nav-link text-danger mt-5" onclick="location.reload()"><i class="bi bi-power"></i> Keluar / Logout</a></li>
-      </ul>
-    </nav>
+<div id="main-page" class="wrapper d-none">
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sidebar-brand">
+      <h6 class="fw-bold text-white mb-1"><i class="bi bi-box-seam me-2"></i>Direktorat Keuangan</h6>
+      <span id="display-role" class="badge bg-primary px-2 py-1 mt-1 small"></span>
+    </div>
+    <ul class="nav flex-column mt-3">
+      <li class="nav-item"><a class="nav-link" id="nav-dashboard" onclick="showPage('dashboard')"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link" id="nav-daftar" onclick="showPage('daftar')"><i class="bi bi-collection-fill"></i> Daftar Barang</a></li>
+      <li class="nav-item"><a class="nav-link" id="nav-masuk" onclick="showPage('masuk')"><i class="bi bi-box-arrow-in-down"></i> Barang Masuk</a></li>
+      <li class="nav-item"><a class="nav-link" id="nav-keluar" onclick="showPage('keluar')"><i class="bi bi-box-arrow-up"></i> Barang Keluar</a></li>
+      <li class="nav-item mt-auto mb-3"><a class="nav-link text-danger" onclick="location.reload()"><i class="bi bi-power"></i> Keluar / Logout</a></li>
+    </ul>
+  </nav>
 
-    <!-- CONTENT AREA -->
-    <main class="col-md-10 ms-sm-auto px-4" style="margin-left: 16.666667%;">
-      <div class="pt-4 pb-2 mb-3">
-        <div id="loading-spinner" class="text-center my-5 d-none">
-          <div class="spinner-border text-primary" role="status"></div>
-          <p class="mt-2 text-muted small">Memuat data terbaru...</p>
-        </div>
-        <div id="konten-dinamis"></div>
-      </div>
-    </main>
-  </div>
+  <!-- KONTEN UTAMA -->
+  <main id="content">
+    <div id="loading-spinner" class="text-center my-5 d-none">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2 text-muted small">Memuat data terbaru...</p>
+    </div>
+    <div id="konten-dinamis"></div>
+  </main>
 </div>
 
 <!-- MODAL TAMBAH BARANG BARU -->
@@ -99,97 +191,56 @@ body { background-color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif
   </div>
 </div>
 
-<!-- JAVASCRIPT LOGIC -->
-  <script>
-    // ⚠️ MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec"; 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let session = { user: '', role: '' };
+let CACHE_DATA = {};
+let currentTxType = '';
 
-    // Variabel Global
-    var session = null;
-    var isMasuk = false;
-
-    // Set tanggal hari ini otomatis di input form
-    document.getElementById('tanggal').valueAsDate = new Date();
-
-    // ==========================================
-    // 1. FUNGSI LOGIN VIA FETCH (API HTTP)
-    // ==========================================
-    function login() {
-      const user = document.getElementById('user').value;
-      const pass = document.getElementById('pass').value;
-      const msg = document.getElementById('login-msg');
-
-      if(!user || !pass) {
-        msg.innerText = "Username dan password wajib diisi!";
-        return;
+function login() {
+  const user = document.getElementById('user').value;
+  const pass = document.getElementById('pass').value;
+  document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
+  
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && res.success) {
+        session = res;
+        document.getElementById('login-page').classList.add('d-none');
+        document.getElementById('main-page').classList.remove('d-none');
+        document.getElementById('display-role').innerText = session.role;
+        showPage('dashboard');
+      } else {
+        document.getElementById('login-msg').innerText = "Kombinasi Username & Password salah!";
       }
+    })
+    .withFailureHandler(function(err) {
+      document.getElementById('login-msg').innerText = "Terjadi kesalahan: " + err.message;
+    })
+    .checkLogin(user, pass);
+}
 
-      msg.innerText = "Memverifikasi enkripsi keamanan...";
+function showPage(page) {
+  document.querySelectorAll('#sidebar .nav-link').forEach(el => el.classList.remove('active'));
+  let activeNav = document.getElementById('nav-' + page);
+  if (activeNav) activeNav.classList.add('active');
+  
+  document.getElementById('loading-spinner').classList.remove('d-none');
+  document.getElementById('konten-dinamis').innerHTML = '';
+  
+  google.script.run
+    .withSuccessHandler(function(data) {
+      CACHE_DATA = data || { master: [], logs: [] };
+      document.getElementById('loading-spinner').classList.add('d-none');
+      renderHalaman(page);
+    })
+    .withFailureHandler(function(err) {
+      document.getElementById('loading-spinner').classList.add('d-none');
+      alert("Gagal mengambil data: " + err.message);
+    })
+    .getInventoryData();
+}
 
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "checkLogin",
-          username: user,
-          password: pass
-        })
-      })
-      .then(res => res.json())
-      .then(res => {
-        if(res.success) {
-          session = res; // Simpan data login ke session global
-          
-          document.getElementById('login-page').classList.add('d-none');
-          document.getElementById('main-page').classList.remove('d-none');
-          document.getElementById('display-role').innerText = session.role;
-
-          // PROTEKSI BARANG MASUK: HANYA MUNCUL JIKA ROLE BUKAN STAF
-          var menuMasuk = document.getElementById("menuBarangMasuk");
-          if (menuMasuk) {
-            if (session.role === "Staf") {
-              menuMasuk.classList.add('d-none');
-            } else {
-              menuMasuk.classList.remove('d-none');
-            }
-          }
-
-          showPage('dashboard');
-        } else {
-          msg.innerText = "Kombinasi Username & Password salah!";
-        }
-      })
-      .catch(err => {
-        msg.innerText = "Gagal terhubung ke server! Periksa koneksi atau URL GAS.";
-        console.error(err);
-      });
-    }
-// ==========================================
-    // 2. FUNGSI NAVIGASI HALAMAN
-    // ==========================================
-    function showPage(page) {
-      document.getElementById('page-dashboard').classList.add('d-none');
-      document.getElementById('page-form').classList.add('d-none');
-
-      if(page === 'dashboard') {
-        document.getElementById('page-dashboard').classList.remove('d-none');
-      } 
-      else if(page === 'masuk') {
-        isMasuk = true;
-        document.getElementById('page-form').classList.remove('d-none');
-        document.getElementById('form-title').innerText = "Form Barang Masuk";
-        
-        let btn = document.getElementById('btn-submit');
-        btn.className = "btn btn-success w-100 fw-bold py-2 shadow-sm pointer";
-      } 
-      else if(page === 'keluar') {
-        isMasuk = false;
-        document.getElementById('page-form').classList.remove('d-none');
-        document.getElementById('form-title').innerText = "Form Barang Keluar";
-        
-        let btn = document.getElementById('btn-submit');
-        btn.className = "btn btn-danger w-100 fw-bold py-2 shadow-sm pointer";
-      }
-    }
 function renderHalaman(menu) {
   let html = '';
   
@@ -277,7 +328,7 @@ function renderHalaman(menu) {
 
     html = `
       <div class="row">
-        <div class="col-md-4">
+        <div class="col-lg-4 col-md-5">
           <div class="mb-4"><h3 class="fw-bold text-dark m-0">Input Alur ${isMasuk ? 'Masuk' : 'Keluar'}</h3><p class="text-muted small">Catat mutasi fisik barang secara berkala.</p></div>
           ${btnBarangBaru}
           <div class="card card-custom p-4">
@@ -291,7 +342,7 @@ function renderHalaman(menu) {
             </form>
           </div>
         </div>
-        <div class="col-md-8">
+        <div class="col-lg-8 col-md-7">
           <div class="mb-4"><h4 class="fw-bold text-secondary m-0">Histori Transaksi Terkini</h4><p class="text-muted small">Daftar mutasi data jenis ${currentTxType} yang berhasil terinput.</p></div>
           <div class="card card-custom"><div class="table-responsive"><table class="table m-0 small align-middle">
             <thead><tr><th>WAKTU CATAT</th><th>KODE SKU</th><th>MUTASI</th><th>PIC ADMIN</th><th>VENDOR</th><th>CATATAN</th></tr></thead><tbody>`;
@@ -350,75 +401,33 @@ function simpanBaru() {
     .addNewItem(data);
 }
 
-// ==========================================
-    // 3. FUNGSI PROSES TRANSAKSI
-    // ==========================================
-    function prosesTransaksi() {
-      const tipeTransaksi = isMasuk ? "MASUK" : "KELUAR";
-      const tanggal = document.getElementById('tanggal').value;
-      const kode = document.getElementById('kode_barang').value;
-      const jumlah = document.getElementById('jumlah').value;
-      const ket = document.getElementById('keterangan').value;
-      const msg = document.getElementById('trans-msg');
+function prosesTransaksi() {
+  let data = {
+    tanggal: document.getElementById('tx-tanggal').value,
+    kode: document.getElementById('tx-kode').value,
+    jumlah: Number(document.getElementById('tx-jumlah').value),
+    vendor: document.getElementById('tx-vendor') ? document.getElementById('tx-vendor').value.trim() : '',
+    ket: document.getElementById('tx-ket').value.trim()
+  };
 
-      if (!tanggal || !kode || !jumlah) {
-        alert("Mohon lengkapi Tanggal, Kode SKU, dan Jumlah Barang!");
-        return;
-      }
+  if (!data.tanggal || !data.kode || !data.jumlah || data.jumlah <= 0) {
+    return alert('Silakan lengkapi Tanggal, Jenis Barang, dan Jumlah mutasi fisik yang valid!');
+  }
 
-      msg.innerText = "Sedang memproses ke sistem...";
+  document.getElementById('konten-dinamis').innerHTML = '';
+  document.getElementById('loading-spinner').classList.remove('d-none');
 
-      const dataTransaksi = {
-        tanggal: tanggal,
-        kode: kode,
-        jumlah: Number(jumlah),
-        ket: ket,
-        vendor: ""
-      };
-
-      // Ambil nama user otomatis dari data session login
-      const userYangLogin = session ? (session.username || session.user) : "Unknown";
-
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "submitTransaction",
-          type: tipeTransaksi,
-          data: dataTransaksi,
-          user: userYangLogin
-        })
-      })
-      .then(res => res.text())
-      .then(responseText => {
-        alert(responseText);
-        msg.innerText = "";
-        
-        // Reset Form
-        document.getElementById('kode_barang').value = "";
-        document.getElementById('jumlah').value = "";
-        document.getElementById('keterangan').value = "";
-      })
-      .catch(err => {
-        alert("Terjadi kesalahan pengiriman!");
-        msg.innerText = "";
-        console.error(err);
-      });
-    }
-    
-// ==========================================
-    // 4. FUNGSI LOGOUT
-    // ==========================================
-    function logout() {
-      session = null;
-      document.getElementById('user').value = "";
-      document.getElementById('pass').value = "";
-      document.getElementById('login-msg').innerText = "";
-      document.getElementById('main-page').classList.add('d-none');
-      document.getElementById('login-page').classList.remove('d-none');
-    }
-  </script>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  google.script.run
+    .withSuccessHandler(function(msg) {
+      alert(msg || "Transaksi berhasil divalidasi!");
+      showPage(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
+    })
+    .withFailureHandler(function(err) {
+      alert("Gagal memproses validasi dokumen: " + err.message);
+      showPage(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
+    })
+    .submitTransaction(currentTxType, data, session.user);
+}
+</script>
 </body>
 </html>
