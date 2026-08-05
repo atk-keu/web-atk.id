@@ -207,29 +207,58 @@ let session = { user: '', role: '' };
 let CACHE_DATA = {};
 let currentTxType = '';
 
-function login() {
-  const user = document.getElementById('user').value;
-  const pass = document.getElementById('pass').value;
-  document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
-  
-  google.script.run
-    .withSuccessHandler(function(res) {
-      if (res && res.success) {
-        session = res;
-        document.getElementById('login-page').classList.add('d-none');
-        document.getElementById('main-page').classList.remove('d-none');
-        document.getElementById('display-role').innerText = session.role;
-        showPage('dashboard');
-      } else {
-        document.getElementById('login-msg').innerText = "Kombinasi Username & Password salah!";
-      }
-    })
-    .withFailureHandler(function(err) {
-      document.getElementById('login-msg').innerText = "Terjadi kesalahan: " + err.message;
-    })
-    .checkLogin(user, pass);
-}
+// ==========================================
+    // 1. FUNGSI LOGIN VIA FETCH (API HTTP)
+    // ==========================================
+    function login() {
+      const user = document.getElementById('user').value;
+      const pass = document.getElementById('pass').value;
+      const msg = document.getElementById('login-msg');
 
+      if(!user || !pass) {
+        msg.innerText = "Username dan password wajib diisi!";
+        return;
+      }
+
+      msg.innerText = "Memverifikasi enkripsi keamanan...";
+
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "checkLogin",
+          username: user,
+          password: pass
+        })
+      })
+      .then(res => res.json())
+      .then(res => {
+        if(res.success) {
+          session = res; // Simpan data login ke session global
+          
+          document.getElementById('login-page').classList.add('d-none');
+          document.getElementById('main-page').classList.remove('d-none');
+          document.getElementById('display-role').innerText = session.role;
+
+          // PROTEKSI BARANG MASUK: HANYA MUNCUL JIKA ROLE BUKAN STAF
+          var menuMasuk = document.getElementById("menuBarangMasuk");
+          if (menuMasuk) {
+            if (session.role === "Staf") {
+              menuMasuk.classList.add('d-none');
+            } else {
+              menuMasuk.classList.remove('d-none');
+            }
+          }
+
+          showPage('dashboard');
+        } else {
+          msg.innerText = "Kombinasi Username & Password salah!";
+        }
+      })
+      .catch(err => {
+        msg.innerText = "Gagal terhubung ke server! Periksa koneksi atau URL GAS.";
+        console.error(err);
+      });
+    }
 function showPage(page) {
   document.querySelectorAll('#sidebar .nav-link').forEach(el => el.classList.remove('active'));
   let activeNav = document.getElementById('nav-' + page);
