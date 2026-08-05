@@ -241,6 +241,19 @@ function checkAuth() {
   mainPage.classList.add('d-none');
   loginPage.classList.remove('d-none');
 }
+
+  // FUNGSI LOGOUT
+function logout() {
+  localStorage.removeItem("user_session");
+  session = { user: '', role: '' };
+  
+  document.getElementById('main-page').classList.add('d-none');
+  document.getElementById('login-page').classList.remove('d-none');
+  
+  if (document.getElementById('user')) document.getElementById('user').value = '';
+  if (document.getElementById('pass')) document.getElementById('pass').value = '';
+  if (document.getElementById('login-msg')) document.getElementById('login-msg').innerText = '';
+}
   
 function login() {
   const user = document.getElementById('user').value.trim();
@@ -277,18 +290,6 @@ function login() {
     });
 }
 
-// FUNGSI LOGOUT
-function logout() {
-  localStorage.removeItem("user_session");
-  session = { user: '', role: '' };
-  
-  document.getElementById('main-page').classList.add('d-none');
-  document.getElementById('login-page').classList.remove('d-none');
-  
-  if (document.getElementById('user')) document.getElementById('user').value = '';
-  if (document.getElementById('pass')) document.getElementById('pass').value = '';
-  if (document.getElementById('login-msg')) document.getElementById('login-msg').innerText = '';
-}
 // -------------------------------------------------------------
 // NAVIGASI & AMBIL DATA INVENTARIS
 // -------------------------------------------------------------
