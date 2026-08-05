@@ -228,7 +228,10 @@ function login() {
   callGAS({ action: "checkLogin", user: user, pass: pass })
     .then(res => {
       if (res && res.success) {
-        session = res;
+        // SIMPAN SESI KE BROWSER
+        session = { user: user, role: res.role };
+        localStorage.setItem("user_session", JSON.stringify(session));
+
         document.getElementById('login-page').classList.add('d-none');
         document.getElementById('main-page').classList.remove('d-none');
         document.getElementById('display-role').innerText = session.role;
