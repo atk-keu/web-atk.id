@@ -1,199 +1,111 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<base target="_top">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistem Inventaris Gudang v2.1</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-<style>
-:root {
-  --sb-bg: #0f172a;
-  --sb-hover: #1e293b;
-  --accent: #2563eb;
-  --main-bg: #f8fafc;
-}
-
-body { 
-  background-color: var(--main-bg); 
-  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; 
-  color: #334155; 
-  overflow-x: hidden;
-}
-
-/* Layout Wrapper */
-.wrapper {
-  display: flex;
-  width: 100%;
-  min-height: 100vh;
-}
-
-/* Sidebar Styling */
-#sidebar {
-  min-width: 260px;
-  max-width: 260px;
-  background: var(--sb-bg);
-  color: #cbd5e1;
-  transition: all 0.3s;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 1000;
-}
-
-.sidebar-brand { 
-  padding: 20px; 
-  border-bottom: 1px solid #1e293b; 
-  text-align: center; 
-}
-
-.nav-link { 
-  color: #94a3b8; 
-  cursor: pointer; 
-  padding: 12px 18px; 
-  font-weight: 500; 
-  border-radius: 8px; 
-  margin: 4px 12px; 
-  display: flex; 
-  align-items: center; 
-  gap: 12px; 
-  transition: all 0.2s ease; 
-}
-
-.nav-link:hover { color: #f8fafc; background: var(--sb-hover); }
-.nav-link.active { color: #ffffff; background: var(--accent); }
-
-/* Main Content Area */
-#content {
-  width: calc(100% - 260px);
-  margin-left: 260px;
-  min-height: 100vh;
-  padding: 30px;
-  transition: all 0.3s;
-}
-
-/* Login Card Styling */
-#login-page { 
-  height: 100vh; 
-  width: 100vw;
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 2000;
-}
-
-.login-card { 
-  border: none; 
-  border-radius: 16px; 
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4); 
-  background: rgba(255, 255, 255, 0.98); 
-}
-
-/* Common UI Component Enhancements */
-.card-custom { 
-  border: none; 
-  border-radius: 12px; 
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1); 
-  background: white; 
-}
-
-.table th { 
-  font-weight: 600; 
-  text-transform: uppercase; 
-  font-size: 0.725rem; 
-  letter-spacing: 0.5px; 
-  color: #64748b; 
-  background-color: #f1f5f9; 
-  border-bottom: 2px solid #e2e8f0;
-}
-
-.badge-status { padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Manajemen Gudang</title>
+  <!-- Bootstrap 5 CSS & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    .pointer { cursor: pointer; }
+  </style>
 </head>
-<body>
+<body class="bg-light">
 
-<!-- HALAMAN LOGIN -->
-<div id="login-page">
-  <div class="card login-card p-4" style="width: 380px;">
-    <div class="card-body text-center p-2">
-      <div class="mb-3 text-primary"><i class="bi bi-box-seam-fill" style="font-size: 3rem;"></i></div>
-      <h4 class="mb-1 fw-bold text-dark">Inventory System</h4>
-      <p class="text-muted small mb-4">Silakan masuk untuk mengelola stok</p>
-      <div class="mb-2 text-start">
-        <input type="text" id="user" class="form-control form-control-lg fs-6" placeholder="Username">
+  <!-- ==================== HALAMAN LOGIN ==================== -->
+  <div id="login-page" class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-sm p-4" style="max-width: 400px; width: 100%;">
+      <h3 class="text-center mb-4 fw-bold">Login Sistem</h3>
+      <div class="mb-3">
+        <label for="user" class="form-label">Username</label>
+        <input type="text" id="user" class="form-control" placeholder="Masukkan username">
       </div>
-      <div class="mb-4 text-start">
-        <input type="password" id="pass" class="form-control form-control-lg fs-6" placeholder="Password">
+      <div class="mb-3">
+        <label for="pass" class="form-label">Password</label>
+        <input type="password" id="pass" class="form-control" placeholder="Masukkan password">
       </div>
-      <button onclick="login()" class="btn btn-primary btn-lg w-100 fs-6 fw-bold shadow-sm">Masuk Aplikasi</button>
-      <div id="login-msg" class="text-danger mt-3 small fw-semibold"></div>
+      <button class="btn btn-primary w-100 fw-bold py-2 mb-2" onclick="login()">Login</button>
+      <div id="login-msg" class="text-danger small text-center fw-semibold"></div>
     </div>
   </div>
-</div>
 
-<!-- HALAMAN UTAMA -->
-<div id="main-page" class="wrapper d-none">
-  <!-- SIDEBAR -->
-  <nav id="sidebar">
-    <div class="sidebar-brand">
-      <h6 class="fw-bold text-white mb-1"><i class="bi bi-box-seam me-2"></i>Direktorat Keuangan</h6>
-      <span id="display-role" class="badge bg-primary px-2 py-1 mt-1 small"></span>
-    </div>
-    <ul class="nav flex-column mt-3">
-      <li class="nav-item"><a class="nav-link" id="nav-dashboard" onclick="showPage('dashboard')"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
-      <li class="nav-item"><a class="nav-link" id="nav-daftar" onclick="showPage('daftar')"><i class="bi bi-collection-fill"></i> Daftar Barang</a></li>
-      <li class="nav-item"><a class="nav-link" id="nav-masuk" onclick="showPage('masuk')"><i class="bi bi-box-arrow-in-down"></i> Barang Masuk</a></li>
-      <li class="nav-item"><a class="nav-link" id="nav-keluar" onclick="showPage('keluar')"><i class="bi bi-box-arrow-up"></i> Barang Keluar</a></li>
-      <li class="nav-item mt-auto mb-3"><a class="nav-link text-danger" onclick="location.reload()"><i class="bi bi-power"></i> Keluar / Logout</a></li>
-    </ul>
-  </nav>
+  <!-- ==================== HALAMAN UTAMA ==================== -->
+  <div id="main-page" class="d-none">
+    <!-- Navbar Navigasi -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="#">GUDANG APP</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link pointer" onclick="showPage('dashboard')">Dashboard</a>
+            </li>
+            <!-- Menu Barang Masuk (Hanya Muncul untuk Admin) -->
+            <li id="menuBarangMasuk" class="nav-item d-none">
+              <a class="nav-link pointer" onclick="showPage('masuk')">Barang Masuk</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link pointer" onclick="showPage('keluar')">Barang Keluar</a>
+            </li>
+          </ul>
+          <div class="d-flex align-items-center text-white me-3">
+            <i class="bi bi-person-circle me-2"></i>
+            <span id="display-role" class="badge bg-secondary">Role</span>
+          </div>
+          <button class="btn btn-outline-light btn-sm" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </nav>
 
-  <!-- KONTEN UTAMA -->
-  <main id="content">
-    <div id="loading-spinner" class="text-center my-5 d-none">
-      <div class="spinner-border text-primary" role="status"></div>
-      <p class="mt-2 text-muted small">Memuat data terbaru...</p>
-    </div>
-    <div id="konten-dinamis"></div>
-  </main>
-</div>
+    <!-- Konten Halaman -->
+    <div class="container my-4">
+      
+      <!-- Page 1: Dashboard -->
+      <div id="page-dashboard" class="page-content">
+        <h2>Selamat Datang</h2>
+        <p class="text-muted">Pilih menu navigasi di atas untuk memulai transaksi inventaris.</p>
+      </div>
 
-<!-- MODAL TAMBAH BARANG BARU -->
-<div class="modal fade" id="modalTambah" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow">
-      <div class="modal-header border-0 bg-light p-3">
-        <h5 class="fw-bold m-0 text-dark"><i class="bi bi-plus-square-fill text-primary me-2"></i>Daftarkan Master Barang Baru</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <!-- Page 2: Form Transaksi (Masuk / Keluar) -->
+      <div id="page-form" class="page-content d-none">
+        <div class="card shadow-sm p-4 mx-auto" style="max-width: 500px;">
+          <h4 id="form-title" class="fw-bold mb-3">Form Transaksi</h4>
+          
+          <div class="mb-3">
+            <label for="tanggal" class="form-label">Tanggal</label>
+            <input type="date" id="tanggal" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label for="kode_barang" class="form-label">Kode SKU Barang</label>
+            <input type="text" id="kode_barang" class="form-control" placeholder="Contoh: SKU-001">
+          </div>
+          <div class="mb-3">
+            <label for="jumlah" class="form-label">Jumlah</label>
+            <input type="number" id="jumlah" class="form-control" min="1" placeholder="0">
+          </div>
+          <div class="mb-3">
+            <label for="keterangan" class="form-label">Keterangan / Alasan</label>
+            <textarea id="keterangan" class="form-control" rows="2" placeholder="Catatan tambahan..."></textarea>
+          </div>
+
+          <button id="btn-submit" type="button" class="btn btn-primary w-100 fw-bold py-2 shadow-sm pointer" onclick="prosesTransaksi()">
+            <i class="bi bi-check2-circle me-1"></i> Validasi Dokumen
+          </button>
+          <div id="trans-msg" class="text-center mt-2 small"></div>
+        </div>
       </div>
-      <div class="modal-body p-4">
-        <p class="text-muted small mb-3">Formulir ini digunakan jika barang yang datang belum pernah terdaftar sama sekali di sistem master data.</p>
-        <div class="mb-2"><label class="small fw-semibold text-secondary">Kode SKU Barang</label><input type="text" id="in-kode" class="form-control" placeholder="Contoh: BRG-001"></div>
-        <div class="mb-2"><label class="small fw-semibold text-secondary">Nama Lengkap Barang</label><input type="text" id="in-nama" class="form-control" placeholder="Contoh: Kertas HVS A4 80gr"></div>
-        <div class="mb-2"><label class="small fw-semibold text-secondary">Kategori</label><input type="text" id="in-kat" class="form-control" placeholder="Contoh: ATK / Elektronik"></div>
-        <div class="mb-2"><label class="small fw-semibold text-secondary">Stok Awal Sistem</label><input type="number" id="in-stok" class="form-control" value="0"></div>
-        <div class="mb-2"><label class="small fw-semibold text-secondary">Satuan Ukur</label><input type="text" id="in-sat" class="form-control" placeholder="Contoh: Pcs / Pack / Box"></div>
-        <div class="mb-3"><label class="small fw-semibold text-secondary">Lokasi Penempatan Rak</label><input type="text" id="in-rak" class="form-control" placeholder="Contoh: RAK-A1"></div>
-      </div>
-      <div class="modal-footer border-0 bg-light p-2">
-        <button type="button" class="btn btn-secondary small" data-bs-dismiss="modal">Batal</button>
-        <button onclick="simpanBaru()" class="btn btn-primary px-4 fw-bold">Simpan Master Data</button>
-      </div>
+
     </div>
   </div>
-</div>
-<!-- JAVASCRIPT LOGIC -->
+
+  <!-- JAVASCRIPT LOGIC -->
   <script>
     // ⚠️ MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec"; 
+    const GAS_URL = "URL_WEB_APP_GOOGLE_APPS_SCRIPT_ANDA_DI_SINI"; 
 
     // Variabel Global
     var session = null;
@@ -201,13 +113,8 @@ body {
 
     // Set tanggal hari ini otomatis di input form
     document.getElementById('tanggal').valueAsDate = new Date();
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-let session = { user: '', role: '' };
-let CACHE_DATA = {};
-let currentTxType = '';
 
-// ==========================================
+    // ==========================================
     // 1. FUNGSI LOGIN VIA FETCH (API HTTP)
     // ==========================================
     function login() {
@@ -259,214 +166,104 @@ let currentTxType = '';
         console.error(err);
       });
     }
-function showPage(page) {
-  document.querySelectorAll('#sidebar .nav-link').forEach(el => el.classList.remove('active'));
-  let activeNav = document.getElementById('nav-' + page);
-  if (activeNav) activeNav.classList.add('active');
-  
-  document.getElementById('loading-spinner').classList.remove('d-none');
-  document.getElementById('konten-dinamis').innerHTML = '';
-  
-  google.script.run
-    .withSuccessHandler(function(data) {
-      CACHE_DATA = data || { master: [], logs: [] };
-      document.getElementById('loading-spinner').classList.add('d-none');
-      renderHalaman(page);
-    })
-    .withFailureHandler(function(err) {
-      document.getElementById('loading-spinner').classList.add('d-none');
-      alert("Gagal mengambil data: " + err.message);
-    })
-    .getInventoryData();
-}
 
-function renderHalaman(menu) {
-  let html = '';
-  
-  // DASHBOARD PANEL
-  if (menu === 'dashboard') {
-    let totalJenis = CACHE_DATA.master ? CACHE_DATA.master.length - 1 : 0;
-    let totalMasuk = CACHE_DATA.logs ? CACHE_DATA.logs.filter(l => l[1] === "MASUK").length : 0;
-    let totalKeluar = CACHE_DATA.logs ? CACHE_DATA.logs.filter(l => l[1] === "KELUAR").length : 0;
-    
-    html = `
-      <div class="mb-4"><h3 class="fw-bold text-dark m-0">Ringkasan Analisis Gudang</h3><p class="text-muted small">Halo ${session.user}, berikut rangkuman aktivitas hari ini.</p></div>
-      <div class="row g-3">
-        <div class="col-md-4"><div class="card card-custom p-4 border-start border-primary border-4">
-          <div class="d-flex justify-content-between align-items-center"><div><p class="text-muted small text-uppercase fw-bold mb-1">Ragam SKU Terdaftar</p><h2 class="fw-bold text-dark mb-0">${totalJenis < 0 ? 0 : totalJenis} Item</h2></div><div class="text-primary fs-1"><i class="bi bi-box"></i></div></div>
-        </div></div>
-        <div class="col-md-4"><div class="card card-custom p-4 border-start border-success border-4">
-          <div class="d-flex justify-content-between align-items-center"><div><p class="text-muted small text-uppercase fw-bold mb-1">Log Selesai Masuk</p><h2 class="fw-bold text-success mb-0">${totalMasuk} Transaksi</h2></div><div class="text-success fs-1"><i class="bi bi-box-arrow-in-down"></i></div></div>
-        </div></div>
-        <div class="col-md-4"><div class="card card-custom p-4 border-start border-danger border-4">
-          <div class="d-flex justify-content-between align-items-center"><div><p class="text-muted small text-uppercase fw-bold mb-1">Log Keluar Distribusi</p><h2 class="fw-bold text-danger mb-0">${totalKeluar} Transaksi</h2></div><div class="text-danger fs-1"><i class="bi bi-box-arrow-up"></i></div></div>
-        </div></div>
-      </div>
-      <div class="card card-custom mt-4">
-        <div class="card-header bg-white py-3 fw-bold border-0 d-flex align-items-center justify-content-between"><span class="text-dark"><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Pemberitahuan Kontrol Batas Stok Minimum</span><span class="badge bg-light text-dark">Limit &lt;= 5 Pcs</span></div>
-        <div class="table-responsive"><table class="table align-middle m-0">
-          <thead><tr><th>KODE BARANG</th><th>NAMA MASTER BARANG</th><th>SISA STOK</th><th>ZONA PENYIMPANAN</th></tr></thead>
-          <tbody>`;
-    
-    let alertCount = 0;
-    if (CACHE_DATA.master) {
-      for(let i=1; i<CACHE_DATA.master.length; i++) {
-        if (Number(CACHE_DATA.master[i][4]) <= 5) {
-          alertCount++;
-          html += `<tr class="table-danger text-danger"><td><span class="badge bg-danger bg-opacity-10 text-danger">${CACHE_DATA.master[i][0]}</span></td><td class="fw-semibold">${CACHE_DATA.master[i][1]}</td><td class="fw-bold">${CACHE_DATA.master[i][4]}</td><td><i class="bi bi-geo-alt-fill me-1"></i>${CACHE_DATA.master[i][6]}</td></tr>`;
-        }
-      }
-    }
-    if (alertCount === 0) html += `<tr><td colspan="4" class="text-center text-success py-4 fw-semibold"><i class="bi bi-check-circle-fill me-2"></i>Semua volume aman dan berada di atas batas kritis.</td></tr>`;
-    html += `</tbody></table></div></div>`;
+    // ==========================================
+    // 2. FUNGSI NAVIGASI HALAMAN
+    // ==========================================
+    function showPage(page) {
+      document.getElementById('page-dashboard').classList.add('d-none');
+      document.getElementById('page-form').classList.add('d-none');
 
-  // DAFTAR BARANG
-  } else if (menu === 'daftar') {
-    html = `
-      <div class="mb-4"><h3 class="fw-bold text-dark m-0">Katalog Master Data Barang</h3><p class="text-muted small">Menu ini berfungsi sebagai acuan monitoring sisa stok gudang pusat.</p></div>
-      <div class="card card-custom"><div class="table-responsive"><table class="table align-middle m-0 text-nowrap">
-        <thead><tr><th>KODE SKU</th><th>NAMA BARANG</th><th>KATEGORI</th><th>STOK AWAL</th><th>STOK BERJALAN</th><th>SATUAN</th><th>LOKASI RAK</th></tr></thead><tbody>`;
-    
-    if (CACHE_DATA.master) {
-      for(let i=1; i<CACHE_DATA.master.length; i++) {
-        let limits = CACHE_DATA.master[i][4] <= 5;
-        html += `<tr>
-          <td><span class="badge bg-light text-secondary border fw-bold px-2 py-1">${CACHE_DATA.master[i][0]}</span></td>
-          <td><div class="fw-bold text-dark">${CACHE_DATA.master[i][1]}</div></td>
-          <td><span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1">${CACHE_DATA.master[i][2]}</span></td>
-          <td class="text-muted">${CACHE_DATA.master[i][3]}</td>
-          <td><span class="badge ${limits ? 'bg-danger text-white': 'bg-success bg-opacity-10 text-success'} badge-status">${CACHE_DATA.master[i][4]}</span></td>
-          <td class="text-muted">${CACHE_DATA.master[i][5]}</td>
-          <td><span class="text-dark fw-medium"><i class="bi bi-geo-alt text-primary me-1"></i>${CACHE_DATA.master[i][6]}</span></td>
-        </tr>`;
-      }
-    }
-    if (!CACHE_DATA.master || CACHE_DATA.master.length <= 1) html += `<tr><td colspan="7" class="text-center text-muted py-5">Sistem belum mendeteksi adanya data master.</td></tr>`;
-    html += `</tbody></table></div></div>`;
-
-  // BARANG MASUK / KELUAR
-  } else if (menu === 'masuk' || menu === 'keluar') {
-    currentTxType = (menu === 'masuk') ? 'MASUK': 'KELUAR';
-    let isMasuk = (menu === 'masuk');
-    let optionsBarang = '<option value="">-- Pilih SKU Barang --</option>';
-    
-    if (CACHE_DATA.master) {
-      for(let i=1; i<CACHE_DATA.master.length; i++) {
-        optionsBarang += `<option value="${CACHE_DATA.master[i][0]}">${CACHE_DATA.master[i][0]} - ${CACHE_DATA.master[i][1]} (Tersedia: ${CACHE_DATA.master[i][4]})</option>`;
+      if(page === 'dashboard') {
+        document.getElementById('page-dashboard').classList.remove('d-none');
+      } 
+      else if(page === 'masuk') {
+        isMasuk = true;
+        document.getElementById('page-form').classList.remove('d-none');
+        document.getElementById('form-title').innerText = "Form Barang Masuk";
+        
+        let btn = document.getElementById('btn-submit');
+        btn.className = "btn btn-success w-100 fw-bold py-2 shadow-sm pointer";
+      } 
+      else if(page === 'keluar') {
+        isMasuk = false;
+        document.getElementById('page-form').classList.remove('d-none');
+        document.getElementById('form-title').innerText = "Form Barang Keluar";
+        
+        let btn = document.getElementById('btn-submit');
+        btn.className = "btn btn-danger w-100 fw-bold py-2 shadow-sm pointer";
       }
     }
 
-    let btnBarangBaru = '';
-    if (isMasuk && session.role !== 'Staf') {
-      btnBarangBaru = `
-        <div class="alert alert-primary border-0 p-3 mb-3 d-flex align-items-center justify-content-between rounded-3">
-          <div class="small text-primary-emphasis"><i class="bi bi-info-circle-fill me-2"></i>Barang datang belum terdaftar?</div>
-          <button class="btn btn-sm btn-primary fw-bold px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambah"><i class="bi bi-plus-lg me-1"></i>Buat Master Baru</button>
-        </div>`;
+    // ==========================================
+    // 3. FUNGSI PROSES TRANSAKSI
+    // ==========================================
+    function prosesTransaksi() {
+      const tipeTransaksi = isMasuk ? "MASUK" : "KELUAR";
+      const tanggal = document.getElementById('tanggal').value;
+      const kode = document.getElementById('kode_barang').value;
+      const jumlah = document.getElementById('jumlah').value;
+      const ket = document.getElementById('keterangan').value;
+      const msg = document.getElementById('trans-msg');
+
+      if (!tanggal || !kode || !jumlah) {
+        alert("Mohon lengkapi Tanggal, Kode SKU, dan Jumlah Barang!");
+        return;
+      }
+
+      msg.innerText = "Sedang memproses ke sistem...";
+
+      const dataTransaksi = {
+        tanggal: tanggal,
+        kode: kode,
+        jumlah: Number(jumlah),
+        ket: ket,
+        vendor: ""
+      };
+
+      // Ambil nama user otomatis dari data session login
+      const userYangLogin = session ? (session.username || session.user) : "Unknown";
+
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "submitTransaction",
+          type: tipeTransaksi,
+          data: dataTransaksi,
+          user: userYangLogin
+        })
+      })
+      .then(res => res.text())
+      .then(responseText => {
+        alert(responseText);
+        msg.innerText = "";
+        
+        // Reset Form
+        document.getElementById('kode_barang').value = "";
+        document.getElementById('jumlah').value = "";
+        document.getElementById('keterangan').value = "";
+      })
+      .catch(err => {
+        alert("Terjadi kesalahan pengiriman!");
+        msg.innerText = "";
+        console.error(err);
+      });
     }
 
-    html = `
-      <div class="row">
-        <div class="col-lg-4 col-md-5">
-          <div class="mb-4"><h3 class="fw-bold text-dark m-0">Input Alur ${isMasuk ? 'Masuk' : 'Keluar'}</h3><p class="text-muted small">Catat mutasi fisik barang secara berkala.</p></div>
-          ${btnBarangBaru}
-          <div class="card card-custom p-4">
-            <form id="form-tx">
-              <div class="mb-3"><label class="small fw-bold text-secondary mb-1">Tanggal Transaksi</label><input type="date" id="tx-tanggal" class="form-control" value="${new Date().toISOString().split('T')[0]}"></div>
-              <div class="mb-3"><label class="small fw-bold text-secondary mb-1">Pilih Barang</label><select id="tx-kode" class="form-select" required>${optionsBarang}</select></div>
-              <div class="mb-3"><label class="small fw-bold text-secondary mb-1">Kuantitas / Jumlah</label><input type="number" id="tx-jumlah" class="form-control" required min="1" placeholder="0"></div>
-              <div class="mb-3 ${isMasuk ? '' : 'd-none'}"><label class="small fw-bold text-secondary mb-1">Pihak Pengirim / Vendor</label><input type="text" id="tx-vendor" class="form-control" placeholder="Contoh: PT Sumber Makmur"></div>
-              <div class="mb-4"><label class="small fw-bold text-secondary mb-1">Keterangan / Notes</label><textarea id="tx-ket" class="form-control" rows="2" placeholder="Catatan opsional..."></textarea></div>
-              <button type="button" class="btn ${isMasuk ? 'btn-success': 'btn-danger'} w-100 fw-bold py-2 shadow-sm" onclick="prosesTransaksi()"><i class="bi bi-check2-circle me-1"></i> Validasi Dokumen</button>
-            </form>
-          </div>
-        </div>
-        <div class="col-lg-8 col-md-7">
-          <div class="mb-4"><h4 class="fw-bold text-secondary m-0">Histori Transaksi Terkini</h4><p class="text-muted small">Daftar mutasi data jenis ${currentTxType} yang berhasil terinput.</p></div>
-          <div class="card card-custom"><div class="table-responsive"><table class="table m-0 small align-middle">
-            <thead><tr><th>WAKTU CATAT</th><th>KODE SKU</th><th>MUTASI</th><th>PIC ADMIN</th><th>VENDOR</th><th>CATATAN</th></tr></thead><tbody>`;
+    // ==========================================
+    // 4. FUNGSI LOGOUT
+    // ==========================================
+    function logout() {
+      session = null;
+      document.getElementById('user').value = "";
+      document.getElementById('pass').value = "";
+      document.getElementById('login-msg').innerText = "";
+      document.getElementById('main-page').classList.add('d-none');
+      document.getElementById('login-page').classList.remove('d-none');
+    }
+  </script>
 
-    let logData = CACHE_DATA.logs || [];
-    let filteredLogs = logData.filter(l => l[1] === currentTxType).reverse();
-
-    filteredLogs.forEach(log => {
-      html += `<tr>
-        <td class="text-muted fw-medium">${log[0]}</td>
-        <td><span class="badge bg-light text-dark border fw-bold">${log[2]}</span></td>
-        <td><span class="badge ${isMasuk ? 'bg-success bg-opacity-10 text-success': 'bg-danger bg-opacity-10 text-danger'} px-2 py-1 fw-bold">${isMasuk ? '+' : '-'} ${log[3]}</span></td>
-        <td class="fw-medium text-dark">${log[4]}</td>
-        <td>${log[5] ? log[5] : '<span class="text-muted">-</span>'}</td>
-        <td class="text-muted">${log[6] ? log[6] : '-'}</td>
-      </tr>`;
-    });
-
-    if (filteredLogs.length === 0) html += `<tr><td colspan="6" class="text-center text-muted py-5">Belum ada riwayat tercatat untuk kategori ini.</td></tr>`;
-    html += `</tbody></table></div></div>
-        </div>
-      </div>`;
-  }
-
-  document.getElementById('konten-dinamis').innerHTML = html;
-}
-
-function simpanBaru() {
-  let data = {
-    kode: document.getElementById('in-kode').value.trim(),
-    nama: document.getElementById('in-nama').value.trim(),
-    kategori: document.getElementById('in-kat').value.trim(),
-    stok: document.getElementById('in-stok').value,
-    satuan: document.getElementById('in-sat').value.trim(),
-    rak: document.getElementById('in-rak').value.trim()
-  };
-
-  if (!data.kode || !data.nama || !data.satuan) return alert('Mohon lengkapi kolom bertanda wajib (Kode, Nama, Satuan)!');
-
-  let modalEl = document.getElementById('modalTambah');
-  let modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-  modalInstance.hide();
-
-  document.getElementById('konten-dinamis').innerHTML = '';
-  document.getElementById('loading-spinner').classList.remove('d-none');
-
-  google.script.run
-    .withSuccessHandler(function(msg) {
-      alert(msg);
-      showPage('masuk');
-    })
-    .withFailureHandler(function(err) {
-      alert("Gagal menyimpan barang baru: " + err.message);
-      showPage('masuk');
-    })
-    .addNewItem(data);
-}
-
-function prosesTransaksi() {
-  let data = {
-    tanggal: document.getElementById('tx-tanggal').value,
-    kode: document.getElementById('tx-kode').value,
-    jumlah: Number(document.getElementById('tx-jumlah').value),
-    vendor: document.getElementById('tx-vendor') ? document.getElementById('tx-vendor').value.trim() : '',
-    ket: document.getElementById('tx-ket').value.trim()
-  };
-
-  if (!data.tanggal || !data.kode || !data.jumlah || data.jumlah <= 0) {
-    return alert('Silakan lengkapi Tanggal, Jenis Barang, dan Jumlah mutasi fisik yang valid!');
-  }
-
-  document.getElementById('konten-dinamis').innerHTML = '';
-  document.getElementById('loading-spinner').classList.remove('d-none');
-
-  google.script.run
-    .withSuccessHandler(function(msg) {
-      alert(msg || "Transaksi berhasil divalidasi!");
-      showPage(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
-    })
-    .withFailureHandler(function(err) {
-      alert("Gagal memproses validasi dokumen: " + err.message);
-      showPage(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
-    })
-    .submitTransaction(currentTxType, data, session.user);
-}
-</script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
