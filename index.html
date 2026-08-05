@@ -213,7 +213,7 @@ function callGAS(payload) {
     return response.json();
   });
 }
- // Fungsi Penjaga Sesi saat Halaman Dibuka
+// Fungsi Penjaga Sesi saat Halaman Dibuka
 function checkAuth() {
   const savedSession = localStorage.getItem("user_session");
   const loginPage = document.getElementById('login-page');
@@ -242,7 +242,7 @@ function checkAuth() {
   loginPage.classList.remove('d-none');
 }
 
-  // FUNGSI LOGOUT
+// FUNGSI LOGOUT
 function logout() {
   localStorage.removeItem("user_session");
   session = { user: '', role: '' };
@@ -254,6 +254,11 @@ function logout() {
   if (document.getElementById('pass')) document.getElementById('pass').value = '';
   if (document.getElementById('login-msg')) document.getElementById('login-msg').innerText = '';
 }
+
+// PANGGUL PENJAGA SESI SAAT HALAMAN SELESAI DIMUAT
+document.addEventListener("DOMContentLoaded", function() {
+  checkAuth();
+});
   
 function login() {
   const user = document.getElementById('user').value.trim();
