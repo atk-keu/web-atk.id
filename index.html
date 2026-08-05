@@ -394,6 +394,35 @@ function renderHalaman(menu) {
   document.getElementById('konten-dinamis').innerHTML = html;
 }
 
+function simpanBaru() {
+  let data = {
+    kode: document.getElementById('in-kode').value.trim(),
+    nama: document.getElementById('in-nama').value.trim(),
+    kategori: document.getElementById('in-kat').value.trim(),
+    stok: document.getElementById('in-stok').value,
+    satuan: document.getElementById('in-sat').value.trim(),
+    rak: document.getElementById('in-rak').value.trim()
+  };
+
+  if (!data.kode || !data.nama || !data.satuan) return alert('Mohon lengkapi kolom bertanda wajib (Kode, Nama, Satuan)!');
+
+  let modalEl = document.getElementById('modalTambah');
+  let modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+  modalInstance.hide();
+
+  document.getElementById('konten-dinamis').innerHTML = '';
+  document.getElementById('loading-spinner').classList.remove('d-none');
+
+  callGAS({ action: "addNewItem", data: data })
+    .then(msg => {
+      alert(typeof msg === 'string' ? msg : "Data master berhasil disimpan!");
+      showPage('masuk');
+    })
+    .catch(err => {
+      alert("Gagal menyimpan barang baru: " + err.message);
+      showPage('masuk');
+    });
+}
 // -------------------------------------------------------------
 // TRANSAKSI & INPUT DATA
 // -------------------------------------------------------------
@@ -440,37 +469,6 @@ function prosesTransaksi() {
       showPage(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
     });
 }
-
-function simpanBaru() {
-  let data = {
-    kode: document.getElementById('in-kode').value.trim(),
-    nama: document.getElementById('in-nama').value.trim(),
-    kategori: document.getElementById('in-kat').value.trim(),
-    stok: document.getElementById('in-stok').value,
-    satuan: document.getElementById('in-sat').value.trim(),
-    rak: document.getElementById('in-rak').value.trim()
-  };
-
-  if (!data.kode || !data.nama || !data.satuan) return alert('Mohon lengkapi kolom bertanda wajib (Kode, Nama, Satuan)!');
-
-  let modalEl = document.getElementById('modalTambah');
-  let modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-  modalInstance.hide();
-
-  document.getElementById('konten-dinamis').innerHTML = '';
-  document.getElementById('loading-spinner').classList.remove('d-none');
-
-  callGAS({ action: "addNewItem", data: data })
-    .then(msg => {
-      alert(typeof msg === 'string' ? msg : "Data master berhasil disimpan!");
-      showPage('masuk');
-    })
-    .catch(err => {
-      alert("Gagal menyimpan barang baru: " + err.message);
-      showPage('masuk');
-    });
-}
-
 </script>
 </body>
 </html>
