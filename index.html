@@ -437,12 +437,29 @@ function prosesTransaksi() {
     return alert('Silakan lengkapi Tanggal, Jenis Barang, dan Jumlah mutasi fisik yang valid!');
   }
 
+  // Khusus Barang Masuk, Minta PIN Admin via Pop-up
+  if (currentTxType === 'MASUK') {
+    let inputPin = prompt("🔒 Masukkan PIN Otentikasi Admin:");
+    
+    if (inputPin === null) return; // Jika klik batal
+    if (inputPin.trim() === "") {
+      return alert("PIN Admin tidak boleh kosong!");
+    }
+    
+    data.pin = inputPin.trim(); // Kirim PIN yang diinput ke backend
+  }
+
   document.getElementById('konten-dinamis').innerHTML = '';
   document.getElementById('loading-spinner').classList.remove('d-none');
 
   callGAS({ action: "submitTransaction", type: currentTxType, data: data, user: session.user })
-    .then(msg => {
-      alert(typeof msg === 'string' ? msg : "Transaksi berhasil divalidasi!");
+    .then(res => {
+      if (typeof res === 'object' && !res.success) {
+        alert("❌ " + res.message);
+      } else {
+        let msg = typeof res === 'object' ? res.message : res;
+        alert("✅ " + (msg || "Transaksi berhasil divalidasi!"));
+      }
       showPage(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
     })
     .catch(err => {
