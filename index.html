@@ -120,53 +120,51 @@ body {
 </head>
 <body>
 
-  <!-- ==================== HALAMAN LOGIN ==================== -->
-  <div id="login-page" class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="card shadow-sm p-4" style="max-width: 400px; width: 100%;">
-      <h3 class="text-center mb-4 fw-bold">Login Sistem</h3>
-      <div class="mb-3">
-        <label for="user" class="form-label">Username</label>
-        <input type="text" id="user" class="form-control" placeholder="Masukkan username">
+ <!-- HALAMAN LOGIN -->
+<div id="login-page">
+  <div class="card login-card p-4" style="width: 380px;">
+    <div class="card-body text-center p-2">
+      <div class="mb-3 text-primary"><i class="bi bi-box-seam-fill" style="font-size: 3rem;"></i></div>
+      <h4 class="mb-1 fw-bold text-dark">Inventory System</h4>
+      <p class="text-muted small mb-4">Silakan masuk untuk mengelola stok</p>
+      <div class="mb-2 text-start">
+        <input type="text" id="user" class="form-control form-control-lg fs-6" placeholder="Username">
       </div>
-      <div class="mb-3">
-        <label for="pass" class="form-label">Password</label>
-        <input type="password" id="pass" class="form-control" placeholder="Masukkan password">
+      <div class="mb-4 text-start">
+        <input type="password" id="pass" class="form-control form-control-lg fs-6" placeholder="Password">
       </div>
-      <button class="btn btn-primary w-100 fw-bold py-2 mb-2" onclick="login()">Login</button>
-      <div id="login-msg" class="text-danger small text-center fw-semibold"></div>
+      <button onclick="login()" class="btn btn-primary btn-lg w-100 fs-6 fw-bold shadow-sm">Masuk Aplikasi</button>
+      <div id="login-msg" class="text-danger mt-3 small fw-semibold"></div>
     </div>
   </div>
+</div>
 
-  <!-- ==================== HALAMAN UTAMA ==================== -->
-  <div id="main-page" class="d-none">
-    <!-- Navbar Navigasi -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-      <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="#">GUDANG APP</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <a class="nav-link pointer" onclick="showPage('dashboard')">Dashboard</a>
-            </li>
-            <!-- Menu Barang Masuk (Hanya Muncul untuk Admin) -->
-            <li id="menuBarangMasuk" class="nav-item d-none">
-              <a class="nav-link pointer" onclick="showPage('masuk')">Barang Masuk</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link pointer" onclick="showPage('keluar')">Barang Keluar</a>
-            </li>
-          </ul>
-          <div class="d-flex align-items-center text-white me-3">
-            <i class="bi bi-person-circle me-2"></i>
-            <span id="display-role" class="badge bg-secondary">Role</span>
-          </div>
-          <button class="btn btn-outline-light btn-sm" onclick="logout()">Logout</button>
-        </div>
-      </div>
-    </nav>
+<!-- HALAMAN UTAMA -->
+<div id="main-page" class="wrapper d-none">
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sidebar-brand">
+      <h6 class="fw-bold text-white mb-1"><i class="bi bi-box-seam me-2"></i>Direktorat Keuangan</h6>
+      <span id="display-role" class="badge bg-primary px-2 py-1 mt-1 small"></span>
+    </div>
+    <ul class="nav flex-column mt-3">
+      <li class="nav-item"><a class="nav-link" id="nav-dashboard" onclick="showPage('dashboard')"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link" id="nav-daftar" onclick="showPage('daftar')"><i class="bi bi-collection-fill"></i> Daftar Barang</a></li>
+      <li class="nav-item"><a class="nav-link" id="nav-masuk" onclick="showPage('masuk')"><i class="bi bi-box-arrow-in-down"></i> Barang Masuk</a></li>
+      <li class="nav-item"><a class="nav-link" id="nav-keluar" onclick="showPage('keluar')"><i class="bi bi-box-arrow-up"></i> Barang Keluar</a></li>
+      <li class="nav-item mt-auto mb-3"><a class="nav-link text-danger" onclick="location.reload()"><i class="bi bi-power"></i> Keluar / Logout</a></li>
+    </ul>
+  </nav>
+
+  <!-- KONTEN UTAMA -->
+  <main id="content">
+    <div id="loading-spinner" class="text-center my-5 d-none">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2 text-muted small">Memuat data terbaru...</p>
+    </div>
+    <div id="konten-dinamis"></div>
+  </main>
+</div>
 
     <!-- Konten Halaman -->
     <div class="container my-4">
