@@ -279,22 +279,6 @@ function login() {
       msgEl.innerText = "Error: " + err.message;
     });
 }
-
-function logout() {
-  // HAPUS SEMUA SESI MEMORI BROWSER
-  localStorage.removeItem("user_session");
-  session = { user: '', role: '' };
-  
-  // SEMBUNYIKAN HALAMAN UTAMA, TAMPILKAN HALAMAN LOGIN
-  document.getElementById('main-page').classList.add('d-none');
-  document.getElementById('login-page').classList.remove('d-none');
-  
-  // KOSONGKAN FORM INPUT
-  if (document.getElementById('user')) document.getElementById('user').value = '';
-  if (document.getElementById('pass')) document.getElementById('pass').value = '';
-  if (document.getElementById('login-msg')) document.getElementById('login-msg').innerText = '';
-}
-
 // -------------------------------------------------------------
 // NAVIGASI & AMBIL DATA INVENTARIS
 // -------------------------------------------------------------
@@ -521,6 +505,52 @@ function prosesTransaksi() {
       showPage(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
     });
 }
+  // Fungsi Penjaga Sesi saat Halaman Dibuka
+function checkAuth() {
+  const savedSession = localStorage.getItem("user_session");
+  const loginPage = document.getElementById('login-page');
+  const mainPage = document.getElementById('main-page');
+
+  if (savedSession) {
+    try {
+      session = JSON.parse(savedSession);
+      if (session && session.user) {
+        // Jika ADA sesi -> Buka Aplikasi
+        loginPage.classList.add('d-none');
+        mainPage.classList.remove('d-none');
+        if (document.getElementById('display-role')) {
+          document.getElementById('display-role').innerText = session.role || 'User';
+        }
+        showPage('dashboard');
+        return;
+      }
+    } catch(e) {
+      localStorage.removeItem("user_session");
+    }
+  }
+
+  // Jika TIDAK ADA sesi -> Pastikan Terkunci
+  mainPage.classList.add('d-none');
+  loginPage.classList.remove('d-none');
+}
+
+// FUNGSI LOGOUT
+function logout() {
+  localStorage.removeItem("user_session");
+  session = { user: '', role: '' };
+  
+  document.getElementById('main-page').classList.add('d-none');
+  document.getElementById('login-page').classList.remove('d-none');
+  
+  if (document.getElementById('user')) document.getElementById('user').value = '';
+  if (document.getElementById('pass')) document.getElementById('pass').value = '';
+  if (document.getElementById('login-msg')) document.getElementById('login-msg').innerText = '';
+}
+
+// PANGGUL PENJAGA SESI SAAT HALAMAN SELESAI DIMUAT
+document.addEventListener("DOMContentLoaded", function() {
+  checkAuth();
+});
 </script>
 </body>
 </html>
