@@ -488,18 +488,6 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// FUNGSI LOGOUT UNTUK MENGUNCI KEMBALI APLIKASI
-function logout() {
-  localStorage.removeItem("user_session"); // Hapus memori sesi
-  session = { user: '', role: '' };
-  
-  // Tampilkan halaman login, sembunyikan halaman utama
-  document.getElementById('main-page').classList.add('d-none');
-  document.getElementById('login-page').classList.remove('d-none');
-  document.getElementById('user').value = '';
-  document.getElementById('pass').value = '';
-  document.getElementById('login-msg').innerText = '';
-}
 </script>
 </body>
 </html>
