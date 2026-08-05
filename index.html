@@ -470,36 +470,7 @@ function prosesTransaksi() {
       showPage(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
     });
 }
-  // Jalankan saat pertama kali web dibuka
-window.addEventListener('DOMContentLoaded', () => {
-  const savedSession = localStorage.getItem("user_session");
-  
-  if (savedSession) {
-    // Jika ada sesi login tersimpan
-    session = JSON.parse(savedSession);
-    document.getElementById('login-page').classList.add('d-none');
-    document.getElementById('main-page').classList.remove('d-none');
-    document.getElementById('display-role').innerText = session.role;
-    showPage('dashboard');
-  } else {
-    // JIKA TIDAK ADA SESI, KUNCI TOTAL DAN TAMPILKAN LOGIN
-    document.getElementById('login-page').classList.remove('d-none');
-    document.getElementById('main-page').classList.add('d-none');
-  }
-});
-
-// FUNGSI LOGOUT UNTUK MENGUNCI KEMBALI APLIKASI
-function logout() {
-  localStorage.removeItem("user_session"); // Hapus memori sesi
-  session = { user: '', role: '' };
-  
-  // Tampilkan halaman login, sembunyikan halaman utama
-  document.getElementById('main-page').classList.add('d-none');
-  document.getElementById('login-page').classList.remove('d-none');
-  document.getElementById('user').value = '';
-  document.getElementById('pass').value = '';
-  document.getElementById('login-msg').innerText = '';
-}
+ 
   </script>
 </body>
 </html>
