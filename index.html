@@ -193,14 +193,14 @@ body {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// ⚠️ GANTI URL DI BAWAH DENGAN URL DEPLOYMENT GOOGLE APPS SCRIPT ANDA (Berakhiran /exec)
+// ⚠️ GANTI DENGAN URL DEPLOYMENT GOOGLE APPS SCRIPT ANDA (/exec)
 const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwkjlYxlJQj4xFBbyx3MZPNWhSLdTSU8AefOrZDOm75DdsetqywWVcRh76U3FLlSlBgYw/exec";
 
 let session = { user: '', role: '' };
 let CACHE_DATA = {};
 let currentTxType = '';
 
-// Helper untuk kirim request HTTP POST ke Google Apps Script
+// Helper Fetch Request ke GAS
 function callGAS(payload) {
   return fetch(GAS_API_URL, {
     method: "POST",
@@ -214,37 +214,90 @@ function callGAS(payload) {
   });
 }
 
+// -------------------------------------------------------------
+// SYSTEM INITIATOR & OTENTIKASI SESI (KUNCI OTOMATIS)
+// -------------------------------------------------------------
+function checkAuth() {
+  const savedSession = localStorage.getItem("user_session");
+  const loginPage = document.getElementById('login-page');
+  const mainPage = document.getElementById('main-page');
+
+  if (savedSession) {
+    try {
+      session = JSON.parse(savedSession);
+      if (session && session.user) {
+        // JIKA ADA SESI VALID -> TAMPILKAN APLIKASI
+        loginPage.classList.add('d-none');
+        mainPage.classList.remove('d-none');
+        if (document.getElementById('display-role')) {
+          document.getElementById('display-role').innerText = session.role || 'User';
+        }
+        showPage('dashboard');
+        return;
+      }
+    } catch(e) {
+      localStorage.removeItem("user_session");
+    }
+  }
+
+  // JIKA TIDAK ADA SESI / BELUM LOGIN -> KUNCI TOTAL
+  mainPage.classList.add('d-none');
+  loginPage.classList.remove('d-none');
+}
+
 function login() {
-  const user = document.getElementById('user').value;
-  const pass = document.getElementById('pass').value;
+  const user = document.getElementById('user').value.trim();
+  const pass = document.getElementById('pass').value.trim();
+  const msgEl = document.getElementById('login-msg');
   
   if (!user || !pass) {
-    document.getElementById('login-msg').innerText = "Masukkan Username & Password!";
+    msgEl.innerText = "Masukkan Username & Password!";
     return;
   }
 
-  document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
+  msgEl.innerText = "Memverifikasi enkripsi keamanan...";
 
   callGAS({ action: "checkLogin", user: user, pass: pass })
     .then(res => {
       if (res && res.success) {
-        // SIMPAN SESI KE BROWSER
+        // SIMPAN DATA LOGIN KE BROWSER
         session = { user: user, role: res.role };
         localStorage.setItem("user_session", JSON.stringify(session));
 
+        msgEl.innerText = "";
         document.getElementById('login-page').classList.add('d-none');
         document.getElementById('main-page').classList.remove('d-none');
-        document.getElementById('display-role').innerText = session.role;
+        if (document.getElementById('display-role')) {
+          document.getElementById('display-role').innerText = session.role;
+        }
         showPage('dashboard');
       } else {
-        document.getElementById('login-msg').innerText = "Kombinasi Username & Password salah!";
+        msgEl.innerText = "Kombinasi Username & Password salah!";
       }
     })
     .catch(err => {
-      document.getElementById('login-msg').innerText = "Error: " + err.message;
+      msgEl.innerText = "Error: " + err.message;
     });
 }
 
+function logout() {
+  // HAPUS SEMUA SESI MEMORI BROWSER
+  localStorage.removeItem("user_session");
+  session = { user: '', role: '' };
+  
+  // SEMBUNYIKAN HALAMAN UTAMA, TAMPILKAN HALAMAN LOGIN
+  document.getElementById('main-page').classList.add('d-none');
+  document.getElementById('login-page').classList.remove('d-none');
+  
+  // KOSONGKAN FORM INPUT
+  if (document.getElementById('user')) document.getElementById('user').value = '';
+  if (document.getElementById('pass')) document.getElementById('pass').value = '';
+  if (document.getElementById('login-msg')) document.getElementById('login-msg').innerText = '';
+}
+
+// -------------------------------------------------------------
+// NAVIGASI & AMBIL DATA INVENTARIS
+// -------------------------------------------------------------
 function showPage(page) {
   document.querySelectorAll('#sidebar .nav-link').forEach(el => el.classList.remove('active'));
   let activeNav = document.getElementById('nav-' + page);
@@ -257,7 +310,7 @@ function showPage(page) {
     .then(data => {
       CACHE_DATA = data || { master: [], logs: [] };
       document.getElementById('loading-spinner').classList.add('d-none');
-      renderHalaman(page); // Memanggil fungsi di bawah
+      renderHalaman(page);
     })
     .catch(err => {
       document.getElementById('loading-spinner').classList.add('d-none');
@@ -265,20 +318,17 @@ function showPage(page) {
     });
 }
 
-// -------------------------------------------------------------
-// FUNGSI RENDER HALAMAN YANG SEBELUMNYA HILANG / TIDAK TERDEFINISI
-// -------------------------------------------------------------
 function renderHalaman(menu) {
   let html = '';
   
-  // DASHBOARD PANEL
+  // DASHBOARD
   if (menu === 'dashboard') {
     let totalJenis = CACHE_DATA.master ? CACHE_DATA.master.length - 1 : 0;
     let totalMasuk = CACHE_DATA.logs ? CACHE_DATA.logs.filter(l => l[1] === "MASUK").length : 0;
     let totalKeluar = CACHE_DATA.logs ? CACHE_DATA.logs.filter(l => l[1] === "KELUAR").length : 0;
     
     html = `
-      <div class="mb-4"><h3 class="fw-bold text-dark m-0">Ringkasan Analisis Gudang</h3><p class="text-muted small">Halo ${session.user}, berikut rangkuman aktivitas hari ini.</p></div>
+      <div class="mb-4"><h3 class="fw-bold text-dark m-0">Ringkasan Analisis Gudang</h3><p class="text-muted small">Halo <strong>${session.user}</strong>, berikut rangkuman aktivitas hari ini.</p></div>
       <div class="row g-3">
         <div class="col-md-4"><div class="card card-custom p-4 border-start border-primary border-4">
           <div class="d-flex justify-content-between align-items-center"><div><p class="text-muted small text-uppercase fw-bold mb-1">Ragam SKU Terdaftar</p><h2 class="fw-bold text-dark mb-0">${totalJenis < 0 ? 0 : totalJenis} Item</h2></div><div class="text-primary fs-1"><i class="bi bi-box"></i></div></div>
@@ -393,34 +443,13 @@ function renderHalaman(menu) {
         </div>
       </div>`;
   }
+
   document.getElementById('konten-dinamis').innerHTML = html;
 }
-function simpanBaru() {
-  let data = {
-    kode: document.getElementById('in-kode').value.trim(),
-    nama: document.getElementById('in-nama').value.trim(),
-    kategori: document.getElementById('in-kat').value.trim(),
-    stok: document.getElementById('in-stok').value,
-    satuan: document.getElementById('in-sat').value.trim(),
-    rak: document.getElementById('in-rak').value.trim()
-  };
-  if (!data.kode || !data.nama || !data.satuan) return alert('Mohon lengkapi kolom bertanda wajib (Kode, Nama, Satuan)!');
-  let modalEl = document.getElementById('modalTambah');
-  let modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-  modalInstance.hide();
-  document.getElementById('konten-dinamis').innerHTML = '';
-  document.getElementById('loading-spinner').classList.remove('d-none');
-  callGAS({ action: "addNewItem", data: data })
-    .then(msg => {
-      alert(typeof msg === 'string' ? msg : "Data master berhasil disimpan!");
-      showPage('masuk');
-    })
-    .catch(err => {
-      alert("Gagal menyimpan barang baru: " + err.message);
-      showPage('masuk');
-    });
-}
 
+// -------------------------------------------------------------
+// TRANSAKSI & INPUT DATA
+// -------------------------------------------------------------
 function prosesTransaksi() {
   let data = {
     tanggal: document.getElementById('tx-tanggal').value,
@@ -438,13 +467,14 @@ function prosesTransaksi() {
   if (currentTxType === 'MASUK') {
     let inputPin = prompt("🔒 Masukkan PIN Otentikasi Admin:");
     
-    if (inputPin === null) return; // Jika klik batal
+    if (inputPin === null) return; 
     if (inputPin.trim() === "") {
       return alert("PIN Admin tidak boleh kosong!");
     }
     
-    data.pin = inputPin.trim(); // Kirim PIN yang diinput ke backend
+    data.pin = inputPin.trim();
   }
+
   document.getElementById('konten-dinamis').innerHTML = '';
   document.getElementById('loading-spinner').classList.remove('d-none');
 
@@ -463,6 +493,40 @@ function prosesTransaksi() {
       showPage(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
     });
 }
-</script>
-</body>
+
+function simpanBaru() {
+  let data = {
+    kode: document.getElementById('in-kode').value.trim(),
+    nama: document.getElementById('in-nama').value.trim(),
+    kategori: document.getElementById('in-kat').value.trim(),
+    stok: document.getElementById('in-stok').value,
+    satuan: document.getElementById('in-sat').value.trim(),
+    rak: document.getElementById('in-rak').value.trim()
+  };
+
+  if (!data.kode || !data.nama || !data.satuan) return alert('Mohon lengkapi kolom bertanda wajib (Kode, Nama, Satuan)!');
+
+  let modalEl = document.getElementById('modalTambah');
+  let modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+  modalInstance.hide();
+
+  document.getElementById('konten-dinamis').innerHTML = '';
+  document.getElementById('loading-spinner').classList.remove('d-none');
+
+  callGAS({ action: "addNewItem", data: data })
+    .then(msg => {
+      alert(typeof msg === 'string' ? msg : "Data master berhasil disimpan!");
+      showPage('masuk');
+    })
+    .catch(err => {
+      alert("Gagal menyimpan barang baru: " + err.message);
+      showPage('masuk');
+    });
+}
+
+// -------------------------------------------------------------
+// EXECUTE PENGECEKAN SESI LANGSUNG SAAT SKRIP DIMUAT
+// -------------------------------------------------------------
+checkAuth();
+</script></body>
 </html>
