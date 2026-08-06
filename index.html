@@ -283,6 +283,34 @@ function login() {
       msgEl.innerText = "Error: " + err.message;
     });
 }
+// Gantilah 'userLoginSekarang' dengan variabel nama user yang aktif di aplikasi Anda
+var userLoginSekarang = "admin@email.com"; 
+
+// Fungsi ini dijalankan otomatis saat halaman selesai dimuat
+window.onload = function() {
+  
+  google.script.run
+    .withSuccessHandler(function(response) {
+      if (response.success) {
+        // Cek jika role BUKAN admin
+        if (response.role.toLowerCase() !== 'admin') {
+          // Sembunyikan menu Barang Masuk (Sesuaikan ID elemen HTML menu Anda)
+          var menuBarangMasuk = document.getElementById("menu-barang-masuk");
+          if (menuBarangMasuk) {
+            menuBarangMasuk.style.display = "none";
+          }
+          console.log("Akses dibatasi. Anda masuk sebagai: " + response.role);
+        } else {
+          console.log("Selamat datang Admin!");
+        }
+      } else {
+        // Jika user tidak terdaftar atau sheet error, kunci menu demi keamanan
+        document.getElementById("menu-barang-masuk").style.display = "none";
+        alert("Peringatan: " + response.message + " Akses menu dibatasi.");
+      }
+    })
+    .checkUserRole(userLoginSekarang);
+};
 
 // -------------------------------------------------------------
 // NAVIGASI & AMBIL DATA INVENTARIS
