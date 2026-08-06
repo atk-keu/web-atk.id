@@ -329,25 +329,6 @@ window.onload = function() {
     .checkUserRole(userLoginSekarang);
 };
 
-  / =================================================================
-// 3. FUNGSI VALIDASI FRONTEND: SEMBUNYIKAN MENU JIKA BUKAN ADMIN
-// =================================================================
-function kunciMenuBarangMasuk(roleUser) {
-  // Sesuai dengan ID elemen navigasi di baris HTML Anda (id="nav-masuk")
-  var menuBarangMasuk = document.getElementById("nav-masuk"); 
-  
-  if (menuBarangMasuk) {
-    // Jika role di Spreadsheet BUKAN "admin", maka hilangkan menu tersebut dari layar
-    if (!roleUser || roleUser.toString().toLowerCase().trim() !== 'admin') {
-      menuBarangMasuk.style.setProperty("display", "none", "important");
-      console.log("Akses dibatasi. Menu Barang Masuk dikunci karena Anda login sebagai: " + roleUser);
-    } else {
-      menuBarangMasuk.style.display = "block";
-      console.log("Selamat datang Admin! Akses penuh menu Barang Masuk dibuka.");
-    }
-  }
-}
-
 // -------------------------------------------------------------
 // NAVIGASI & AMBIL DATA INVENTARIS
 // -------------------------------------------------------------
