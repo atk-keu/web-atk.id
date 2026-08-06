@@ -213,33 +213,95 @@ function callGAS(payload) {
     return response.json();
   });
 }
+// Ganti fungsi checkAuth bawaan Anda dengan ini
+function checkAuth() {
+  const savedSession = localStorage.getItem("user_session");
+  const loginPage = document.getElementById('login-page');
+  const mainPage = document.getElementById('main-page');
+  
+  if (savedSession) {
+    try {
+      session = JSON.parse(savedSession);
+      if (session && session.user) {
+        loginPage.classList.add('d-none');
+        mainPage.classList.remove('d-none');
+        
+        // Menampilkan role di dashboard jika ada elemennya
+        if (document.getElementById('display-role')) {
+          document.getElementById('display-role').innerText = session.role || 'User';
+        }
+        
+        // PENTING: Jalankan fungsi penguncian menu saat reload halaman
+        kunciMenuBarangMasuk(session.role);
+        
+        showPage('dashboard');
+        return;
+      }
+    } catch(e) {
+      localStorage.removeItem("user_session");
+    }
+  }
+  mainPage.classList.add('d-none');
+  loginPage.classList.remove('d-none');
+}
 
+// Ganti fungsi login bawaan Anda dengan ini
 function login() {
-  const user = document.getElementById('user').value;
-  const pass = document.getElementById('pass').value;
+  const user = document.getElementById('user').value.trim();
+  const pass = document.getElementById('pass').value.trim();
+  const msgEl = document.getElementById('login-msg');
   
   if (!user || !pass) {
-    document.getElementById('login-msg').innerText = "Masukkan Username & Password!";
+    msgEl.innerText = "Masukkan Username & Password!";
     return;
   }
-
-  document.getElementById('login-msg').innerText = "Memverifikasi enkripsi keamanan...";
-
+  
+  msgEl.innerText = "Memverifikasi hak akses...";
+  
+  // Memanggil fungsi checkLogin di Code.gs
   callGAS({ action: "checkLogin", user: user, pass: pass })
     .then(res => {
       if (res && res.success) {
-        session = res;
+        // MENYIMPAN DATA USER DAN ROLE YANG DIKIRIM OLEH SPREADSHEET
+        session = { user: res.user, role: res.role };
+        localStorage.setItem("user_session", JSON.stringify(session));
+        
+        msgEl.innerText = "";
         document.getElementById('login-page').classList.add('d-none');
         document.getElementById('main-page').classList.remove('d-none');
-        document.getElementById('display-role').innerText = session.role;
+        
+        if (document.getElementById('display-role')) {
+          document.getElementById('display-role').innerText = session.role;
+        }
+        
+        // PENTING: Jalankan fungsi penguncian menu tepat setelah klik login berhasil
+        kunciMenuBarangMasuk(session.role);
+        
         showPage('dashboard');
       } else {
-        document.getElementById('login-msg').innerText = "Kombinasi Username & Password salah!";
+        msgEl.innerText = "Username atau Password salah!";
       }
     })
     .catch(err => {
-      document.getElementById('login-msg').innerText = "Error: " + err.message;
+      msgEl.innerText = "Error: " + err.message;
     });
+}
+
+// TAMBAHKAN FUNGSI BARU INI DI DALAM TAG <SCRIPT>
+function kunciMenuBarangMasuk(roleUser) {
+  var menuBarangMasuk = document.getElementById("nav-masuk");
+  
+  if (menuBarangMasuk) {
+    // Validasi ketat jika teks role bukan 'admin'
+    if (!roleUser || roleUser.toString().toLowerCase().trim() !== 'admin') {
+      // Menggunakan style.setProperty agar tidak kalah kuat dengan CSS kelas Bootstrap (d-flex/d-block)
+      menuBarangMasuk.style.setProperty("display", "none", "important");
+      console.log("Menu Barang Masuk disembunyikan untuk role: " + roleUser);
+    } else {
+      menuBarangMasuk.style.setProperty("display", "block", "important");
+      console.log("Akses penuh dibuka untuk Admin.");
+    }
+  }
 }
 
 function showPage(page) {
