@@ -208,7 +208,7 @@ function callGAS(payload) {
     return response.json();
   });
 }
-// Fungsi Penjaga Sesi saat Halaman Dibuka
+
 // =================================================================
 // 1. FUNGSI PENJAGA SESI SAAT HALAMAN DIBUKA / RELOAD
 // =================================================================
@@ -243,6 +243,7 @@ function checkAuth() {
   mainPage.classList.add('d-none');
   loginPage.classList.remove('d-none');
 }
+  
 // FUNGSI LOGOUT
 function logout() {
   localStorage.removeItem("user_session");
@@ -256,6 +257,9 @@ function logout() {
   if (document.getElementById('login-msg')) document.getElementById('login-msg').innerText = '';
 }
 
+// =================================================================
+// 2. FUNGSI UTAMA UNTUK PROSES LOGIN USER
+// =================================================================
 function login() {
   const user = document.getElementById('user').value.trim();
   const pass = document.getElementById('pass').value.trim();
@@ -265,21 +269,27 @@ function login() {
     msgEl.innerText = "Masukkan Username & Password!";
     return;
   }
+  
   msgEl.innerText = "Memverifikasi enkripsi keamanan...";
-
+  
   callGAS({ action: "checkLogin", user: user, pass: pass })
     .then(res => {
       if (res && res.success) {
-        // SIMPAN DATA LOGIN KE BROWSER
+        // SIMPAN DATA LOGIN KE BROWSER (TERMASUK ROLE DARI SPREADSHEET)
         session = { user: user, role: res.role };
         localStorage.setItem("user_session", JSON.stringify(session));
-
+        
         msgEl.innerText = "";
         document.getElementById('login-page').classList.add('d-none');
         document.getElementById('main-page').classList.remove('d-none');
+        
         if (document.getElementById('display-role')) {
           document.getElementById('display-role').innerText = session.role;
         }
+        
+        // JALANKAN VALIDASI MENU BERDASARKAN ROLE YANG BARU LOGIN
+        kunciMenuBarangMasuk(session.role);
+        
         showPage('dashboard');
       } else {
         msgEl.innerText = "Kombinasi Username & Password salah!";
@@ -289,7 +299,8 @@ function login() {
       msgEl.innerText = "Error: " + err.message;
     });
 }
-// Gantilah 'userLoginSekarang' dengan variabel nama user yang aktif di aplikasi Anda
+  
+  // Gantilah 'userLoginSekarang' dengan variabel nama user yang aktif di aplikasi Anda
 var userLoginSekarang = "untung"; 
 
 // Fungsi ini dijalankan otomatis saat halaman selesai dimuat
@@ -316,6 +327,33 @@ window.onload = function() {
       }
     })
     .checkUserRole(userLoginSekarang);
+};
+
+  / =================================================================
+// 3. FUNGSI VALIDASI FRONTEND: SEMBUNYIKAN MENU JIKA BUKAN ADMIN
+// =================================================================
+function kunciMenuBarangMasuk(roleUser) {
+  // Sesuai dengan ID elemen navigasi di baris HTML Anda (id="nav-masuk")
+  var menuBarangMasuk = document.getElementById("nav-masuk"); 
+  
+  if (menuBarangMasuk) {
+    // Jika role di Spreadsheet BUKAN "admin", maka hilangkan menu tersebut dari layar
+    if (!roleUser || roleUser.toString().toLowerCase().trim() !== 'admin') {
+      menuBarangMasuk.style.setProperty("display", "none", "important");
+      console.log("Akses dibatasi. Menu Barang Masuk dikunci karena Anda login sebagai: " + roleUser);
+    } else {
+      menuBarangMasuk.style.display = "block";
+      console.log("Selamat datang Admin! Akses penuh menu Barang Masuk dibuka.");
+    }
+  }
+}
+
+// =================================================================
+// 4. TRIGER OTOMATIS SAAT HALAMAN SELESAI DIMUAT
+// =================================================================
+window.onload = function() {
+  // Langsung cek otentikasi sesi saat aplikasi diakses
+  checkAuth();
 };
 
 // -------------------------------------------------------------
