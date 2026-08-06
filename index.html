@@ -209,11 +209,14 @@ function callGAS(payload) {
   });
 }
 // Fungsi Penjaga Sesi saat Halaman Dibuka
+// =================================================================
+// 1. FUNGSI PENJAGA SESI SAAT HALAMAN DIBUKA / RELOAD
+// =================================================================
 function checkAuth() {
   const savedSession = localStorage.getItem("user_session");
   const loginPage = document.getElementById('login-page');
   const mainPage = document.getElementById('main-page');
-
+  
   if (savedSession) {
     try {
       session = JSON.parse(savedSession);
@@ -221,9 +224,14 @@ function checkAuth() {
         // Jika ADA sesi -> Buka Aplikasi
         loginPage.classList.add('d-none');
         mainPage.classList.remove('d-none');
+        
         if (document.getElementById('display-role')) {
           document.getElementById('display-role').innerText = session.role || 'User';
         }
+        
+        // JALANKAN VALIDASI MENU BERDASARKAN ROLE SESI
+        kunciMenuBarangMasuk(session.role);
+        
         showPage('dashboard');
         return;
       }
@@ -231,12 +239,10 @@ function checkAuth() {
       localStorage.removeItem("user_session");
     }
   }
-
   // Jika TIDAK ADA sesi -> Pastikan Terkunci
   mainPage.classList.add('d-none');
   loginPage.classList.remove('d-none');
 }
-
 // FUNGSI LOGOUT
 function logout() {
   localStorage.removeItem("user_session");
@@ -334,6 +340,7 @@ function showPage(page) {
       alert("Gagal mengambil data: " + err.message);
     });
 }
+  
 function renderHalaman(menu) {
   let html = '';
   
