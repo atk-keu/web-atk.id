@@ -592,5 +592,31 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.log('Service Worker Gagal:', err));
   });
 }
+  // =================================================================
+// SKRIP PENGAMAN: JALANKAN DOWNLOAD HANYA JIKA DI AKSES DARI GITHUB
+// =================================================================
+window.addEventListener('DOMContentLoaded', () => {
+  // Cek apakah web dibuka dari GitHub Pages (mengandung kata 'github.io')
+  const isGitHub = window.location.hostname.includes('github.io');
+  
+  if (isGitHub) {
+    // 1. Suntik file manifest.json secara dinamis ke dalam <head>
+    const linkManifest = document.createElement('link');
+    linkManifest.rel = 'manifest';
+    linkManifest.href = 'manifest.json';
+    document.head.appendChild(linkManifest);
+    
+    // 2. Daftarkan Service Worker untuk tombol instalasi komputer
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('PWA aktif di GitHub:', reg))
+        .catch(err => console.log('PWA gagal:', err));
+    }
+  } else {
+    // Jika dibuka dari ://google.com, abaikan manifest agar login tidak nge-hang
+    console.log("Aplikasi dijalankan langsung di server Google. Fitur PWA dinonaktifkan.");
+  }
+});
+
 </body>
 </html>
