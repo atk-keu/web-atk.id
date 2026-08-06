@@ -63,10 +63,8 @@ body {
   gap: 12px; 
   transition: all 0.2s ease; 
 }
-
 .nav-link:hover { color: #f8fafc; background: var(--sb-hover); }
 .nav-link.active { color: #ffffff; background: var(--accent); }
-
 /* Main Content Area */
 #content {
   width: calc(100% - 260px);
@@ -75,7 +73,6 @@ body {
   padding: 30px;
   transition: all 0.3s;
 }
-
 /* Login Card Styling */
 #login-page { 
   height: 100vh; 
@@ -89,7 +86,6 @@ body {
   left: 0;
   z-index: 2000;
 }
-
 .login-card { 
   border: none; 
   border-radius: 16px; 
@@ -114,7 +110,6 @@ body {
   background-color: #f1f5f9; 
   border-bottom: 2px solid #e2e8f0;
 }
-
 .badge-status { padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
 </style>
 </head>
@@ -264,7 +259,6 @@ function login() {
     msgEl.innerText = "Masukkan Username & Password!";
     return;
   }
-
   msgEl.innerText = "Memverifikasi enkripsi keamanan...";
 
   callGAS({ action: "checkLogin", user: user, pass: pass })
@@ -312,7 +306,6 @@ function showPage(page) {
       alert("Gagal mengambil data: " + err.message);
     });
 }
-
 function renderHalaman(menu) {
   let html = '';
   
@@ -418,10 +411,8 @@ function renderHalaman(menu) {
           <div class="mb-4"><h4 class="fw-bold text-secondary m-0">Histori Transaksi Terkini</h4><p class="text-muted small">Daftar mutasi data jenis ${currentTxType} yang berhasil terinput.</p></div>
           <div class="card card-custom"><div class="table-responsive"><table class="table m-0 small align-middle">
             <thead><tr><th>WAKTU CATAT</th><th>KODE SKU</th><th>MUTASI</th><th>PIC ADMIN</th><th>VENDOR</th><th>CATATAN</th></tr></thead><tbody>`;
-
     let logData = CACHE_DATA.logs || [];
     let filteredLogs = logData.filter(l => l[1] === currentTxType).reverse();
-
     filteredLogs.forEach(log => {
       html += `<tr>
         <td class="text-muted fw-medium">${log[0]}</td>
@@ -497,10 +488,8 @@ function prosesTransaksi() {
     
     data.pin = inputPin.trim();
   }
-
   document.getElementById('konten-dinamis').innerHTML = '';
   document.getElementById('loading-spinner').classList.remove('d-none');
-
   callGAS({ action: "submitTransaction", type: currentTxType, data: data, user: session.user })
     .then(res => {
       if (typeof res === 'object' && !res.success) {
