@@ -460,32 +460,60 @@ function simpanBaru() {
     kode: document.getElementById('in-kode').value.trim(),
     nama: document.getElementById('in-nama').value.trim(),
     kategori: document.getElementById('in-kat').value.trim(),
-    stok: document.getElementById('in-stok').value,
+    stok: Number(document.getElementById('in-stok').value) || 0,
     satuan: document.getElementById('in-sat').value.trim(),
     rak: document.getElementById('in-rak').value.trim()
   };
 
-  if (!data.kode || !data.nama || !data.satuan) return alert('Mohon lengkapi kolom bertanda wajib (Kode, Nama, Satuan)!');
+  if (!data.kode || !data.nama || !data.satuan) {
+    return alert('Mohon lengkapi kolom bertanda wajib (Kode, Nama, Satuan)!');
+  }
 
+  // Sembunyikan Modal Tambah
   let modalEl = document.getElementById('modalTambah');
   let modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
   modalInstance.hide();
 
-  document.getElementById('konten-dinamis').innerHTML = '';
+  // Tampilkan Spinner Loading Ringan
   document.getElementById('loading-spinner').classList.remove('d-none');
 
+  // Kirim data ke Google Apps Script di background
   callGAS({ action: "addNewItem", data: data })
     .then(msg => {
+      document.getElementById('loading-spinner').classList.add('d-none');
+
+      // ⚡ OPTIMASI CEPAT: Langsung tambahkan barang baru ke CACHE_DATA tanpa fetch ulang seluruh Sheet
+      if (!CACHE_DATA.master) CACHE_DATA.master = [];
+      CACHE_DATA.master.push([
+        data.kode,
+        data.nama,
+        data.kategori,
+        data.stok,
+        data.stok, // Stok Berjalan awal = Stok Awal
+        data.satuan,
+        data.rak
+      ]);
+
       alert(typeof msg === 'string' ? msg : "Data master berhasil disimpan!");
-      showPage('masuk');
+      
+      // Bersihkan form modal
+      document.getElementById('in-kode').value = '';
+      document.getElementById('in-nama').value = '';
+      document.getElementById('in-kat').value = '';
+      document.getElementById('in-stok').value = '';
+      document.getElementById('in-sat').value = '';
+      document.getElementById('in-rak').value = '';
+
+      // Render ulang halaman tanpa reload data dari server
+      renderHalaman('masuk');
     })
     .catch(err => {
+      document.getElementById('loading-spinner').classList.add('d-none');
       alert("Gagal menyimpan barang baru: " + err.message);
-      showPage('masuk');
     });
 }
-
-function prosesTransaksi() {
+  
+ function prosesTransaksi() {
   let data = {
     tanggal: document.getElementById('tx-tanggal').value,
     kode: document.getElementById('tx-kode').value,
@@ -498,19 +526,62 @@ function prosesTransaksi() {
     return alert('Silakan lengkapi Tanggal, Jenis Barang, dan Jumlah mutasi fisik yang valid!');
   }
 
-  document.getElementById('konten-dinamis').innerHTML = '';
+  if (currentTxType === 'MASUK') {
+    let inputPin = prompt("🔒 Masukkan PIN Otentikasi Admin:");
+    if (inputPin === null) return; 
+    if (inputPin.trim() === "") return alert("PIN Admin tidak boleh kosong!");
+    data.pin = inputPin.trim();
+  }
+
   document.getElementById('loading-spinner').classList.remove('d-none');
 
   callGAS({ action: "submitTransaction", type: currentTxType, data: data, user: session.user })
-    .then(msg => {
-      alert(typeof msg === 'string' ? msg : "Transaksi berhasil divalidasi!");
-      showPage(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
+    .then(res => {
+      document.getElementById('loading-spinner').classList.add('d-none');
+
+      if (typeof res === 'object' && !res.success) {
+        alert("❌ " + res.message);
+      } else {
+        // ⚡ OPTIMASI CEPAT: Update stok di memori CACHE_DATA langsung
+        if (CACHE_DATA.master) {
+          for (let i = 1; i < CACHE_DATA.master.length; i++) {
+            if (CACHE_DATA.master[i][0].toString() === data.kode.toString()) {
+              let stokLama = Number(CACHE_DATA.master[i][4]);
+              CACHE_DATA.master[i][4] = (currentTxType === 'MASUK') ? (stokLama + data.jumlah) : (stokLama - data.jumlah);
+              break;
+            }
+          }
+        }
+
+        // Tambahkan Log Baru ke Memori Lokal
+        if (!CACHE_DATA.logs) CACHE_DATA.logs = [];
+        CACHE_DATA.logs.push([
+          data.tanggal,
+          currentTxType,
+          data.kode,
+          data.jumlah,
+          session.user,
+          data.vendor || "-",
+          data.ket || "-"
+        ]);
+
+        let msg = typeof res === 'object' ? res.message : res;
+        alert("✅ " + (msg || "Transaksi berhasil divalidasi!"));
+        
+        // Reset Form
+        document.getElementById('tx-jumlah').value = '';
+        if (document.getElementById('tx-vendor')) document.getElementById('tx-vendor').value = '';
+        document.getElementById('tx-ket').value = '';
+
+        // Render ulang tampilan instan
+        renderHalaman(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
+      }
     })
     .catch(err => {
+      document.getElementById('loading-spinner').classList.add('d-none');
       alert("Gagal memproses transaksi: " + err.message);
-      showPage(currentTxType === 'MASUK' ? 'masuk' : 'keluar');
     });
 }
-</script>
+}</script>
 </body>
 </html>
