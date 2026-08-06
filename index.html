@@ -245,7 +245,6 @@ function checkAuth() {
   mainPage.classList.add('d-none');
   loginPage.classList.remove('d-none');
 }
-// Ganti fungsi login bawaan Anda dengan ini
 function login() {
   const user = document.getElementById('user').value.trim();
   const pass = document.getElementById('pass').value.trim();
@@ -256,13 +255,13 @@ function login() {
     return;
   }
   
-  msgEl.innerText = "Memverifikasi hak akses...";
+  msgEl.innerText = "Memverifikasi hak akses database...";
   
-  // Memanggil fungsi checkLogin di Code.gs
-  callGAS({ action: "checkLogin", user: user, pass: pass })
-    .then(res => {
+  // BYPASS callGAS: Gunakan perintah asli Google Apps Script agar tidak memicu freeze
+  google.script.run
+    .withSuccessHandler(function(res) {
       if (res && res.success) {
-        // MENYIMPAN DATA USER DAN ROLE YANG DIKIRIM OLEH SPREADSHEET
+        // Menyimpan data login ke memori browser
         session = { user: res.user, role: res.role };
         localStorage.setItem("user_session", JSON.stringify(session));
         
@@ -274,17 +273,19 @@ function login() {
           document.getElementById('display-role').innerText = session.role;
         }
         
-        // PENTING: Jalankan fungsi penguncian menu tepat setelah klik login berhasil
+        // Eksekusi fungsi penguncian menu Barang Masuk yang kemarin sudah berjalan
         kunciMenuBarangMasuk(session.role);
         
+        // Muat halaman utama
         showPage('dashboard');
       } else {
         msgEl.innerText = "Username atau Password salah!";
       }
     })
-    .catch(err => {
-      msgEl.innerText = "Error: " + err.message;
-    });
+    .withFailureHandler(function(err) {
+      msgEl.innerText = "Koneksi Google Gagal: " + err.message;
+    })
+    .checkLogin(user, pass); // Memanggil langsung fungsi checkLogin(username, password) Anda di Code.gs
 }
 
 // TAMBAHKAN FUNGSI BARU INI DI DALAM TAG <SCRIPT>
