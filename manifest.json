@@ -13,7 +13,7 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": "index.html",
+  "start_url": "/web-atk.id/index.html",
   "background_color": "#ffffff",
   "theme_color": "#0d6efd",
   "display": "standalone",
