@@ -5,7 +5,6 @@
 <base target="_top">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sistem Inventaris Gudang v2.1</title>
-<meta name="theme-color" content="#0d6efd"> 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 <style>
@@ -116,7 +115,7 @@ body {
   border-bottom: 2px solid #e2e8f0;
 }
 
-.badge-status { padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; } 
+.badge-status { padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
 </style>
 </head>
 <body>
@@ -245,6 +244,7 @@ function checkAuth() {
   mainPage.classList.add('d-none');
   loginPage.classList.remove('d-none');
 }
+// Ganti fungsi login bawaan Anda dengan ini
 function login() {
   const user = document.getElementById('user').value.trim();
   const pass = document.getElementById('pass').value.trim();
@@ -255,13 +255,13 @@ function login() {
     return;
   }
   
-  msgEl.innerText = "Memverifikasi hak akses database...";
+  msgEl.innerText = "Memverifikasi hak akses...";
   
-  // BYPASS callGAS: Gunakan perintah asli Google Apps Script agar tidak memicu freeze
-  google.script.run
-    .withSuccessHandler(function(res) {
+  // Memanggil fungsi checkLogin di Code.gs
+  callGAS({ action: "checkLogin", user: user, pass: pass })
+    .then(res => {
       if (res && res.success) {
-        // Menyimpan data login ke memori browser
+        // MENYIMPAN DATA USER DAN ROLE YANG DIKIRIM OLEH SPREADSHEET
         session = { user: res.user, role: res.role };
         localStorage.setItem("user_session", JSON.stringify(session));
         
@@ -273,19 +273,17 @@ function login() {
           document.getElementById('display-role').innerText = session.role;
         }
         
-        // Eksekusi fungsi penguncian menu Barang Masuk yang kemarin sudah berjalan
+        // PENTING: Jalankan fungsi penguncian menu tepat setelah klik login berhasil
         kunciMenuBarangMasuk(session.role);
         
-        // Muat halaman utama
         showPage('dashboard');
       } else {
         msgEl.innerText = "Username atau Password salah!";
       }
     })
-    .withFailureHandler(function(err) {
-      msgEl.innerText = "Koneksi Google Gagal: " + err.message;
-    })
-    .checkLogin(user, pass); // Memanggil langsung fungsi checkLogin(username, password) Anda di Code.gs
+    .catch(err => {
+      msgEl.innerText = "Error: " + err.message;
+    });
 }
 
 // TAMBAHKAN FUNGSI BARU INI DI DALAM TAG <SCRIPT>
@@ -514,8 +512,7 @@ function simpanBaru() {
       alert("Gagal menyimpan barang baru: " + err.message);
     });
 }
-  
- function prosesTransaksi() {
+function prosesTransaksi() {
   let data = {
     tanggal: document.getElementById('tx-tanggal').value,
     kode: document.getElementById('tx-kode').value,
@@ -584,40 +581,6 @@ function simpanBaru() {
       alert("Gagal memproses transaksi: " + err.message);
     });
 }
-}</script>
-  // Daftarkan Service Worker jika browser mendukung
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(reg => console.log('Service Worker Terdaftar!', reg))
-      .catch(err => console.log('Service Worker Gagal:', err));
-  });
-}
-  // =================================================================
-// SKRIP PENGAMAN: JALANKAN DOWNLOAD HANYA JIKA DI AKSES DARI GITHUB
-// =================================================================
-window.addEventListener('DOMContentLoaded', () => {
-  // Cek apakah web dibuka dari GitHub Pages (mengandung kata 'github.io')
-  const isGitHub = window.location.hostname.includes('github.io');
-  
-  if (isGitHub) {
-    // 1. Suntik file manifest.json secara dinamis ke dalam <head>
-    const linkManifest = document.createElement('link');
-    linkManifest.rel = 'manifest';
-    linkManifest.href = 'manifest.json';
-    document.head.appendChild(linkManifest);
-    
-    // 2. Daftarkan Service Worker untuk tombol instalasi komputer
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('PWA aktif di GitHub:', reg))
-        .catch(err => console.log('PWA gagal:', err));
-    }
-  } else {
-    // Jika dibuka dari ://google.com, abaikan manifest agar login tidak nge-hang
-    console.log("Aplikasi dijalankan langsung di server Google. Fitur PWA dinonaktifkan.");
-  }
-});
-
+</script>
 </body>
 </html>
