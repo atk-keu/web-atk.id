@@ -1,21 +1,27 @@
 {
-  "short_name": "ATK App",
-  "name": "Aplikasi Manajemen ATK Gudang",
-  "icons": [
-    {
-      "src": "https://lh3.googleusercontent.com/d/1ZfH-DNJvBO0qu7qU8qQ5tlMrI9Mgsz_D",
+  "short_name": "Fleet PIN",
+  "name": "Sistem PIN Top Up Fleet",
+  "id": "./",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#006A4E",
+  "theme_color": "#006A4E",
+  "orientation": "portrait",
+    "icons": [
+       {
+      "src": "icon-192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
-      "src": "https://lh3.googleusercontent.com/d/1ZfH-DNJvBO0qu7qU8qQ5tlMrI9Mgsz_D",
+      "src": "icon-512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
-  ],
-  "start_url": "./",
-  "background_color": "#ffffff",
-  "theme_color": "#0d6efd",
-  "display": "standalone",
-  "orientation": "portrait"
+
+  ]
+
 }
